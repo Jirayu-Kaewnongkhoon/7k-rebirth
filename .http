@@ -1,0 +1,35 @@
+GET http://localhost:3300/boss
+content-type: application/json
+
+###
+
+POST http://localhost:3300/leaderboard
+content-type: application/json
+
+{
+    "bossId": 1,
+    "date": "2026-03-02"
+}
+
+###
+
+DELETE http://localhost:3300/leaderboard/1
+
+###
+
+POST http://localhost:3300/entry
+content-type: application/json
+
+{
+    "leaderboardId": 19,
+    "entries": [
+        {
+            "playerId": 1,
+            "score": 130
+        },
+        {
+            "playerId": 2,
+            "score": 98
+        }
+    ]
+}

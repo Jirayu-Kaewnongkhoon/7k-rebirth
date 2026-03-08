@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Player {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  // Soft delete
+  leavedAt DateTime? @db.Date
+  isActive Boolean   @default(true)
+
+  // Relations
+  stats   PlayerBossStat[]
+  entries DailyLeaderboardEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model Boss {
+  id      Int    @id @default(autoincrement())
+  name    String
+  weekday Int // 0 = Sunday, 6 = Saturday
+
+  leaderboards DailyLeaderboard[]
+  stats        PlayerBossStat[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([weekday]) // ป้องกันซ้ำวัน
+}
+
+model DailyLeaderboard {
+  id   Int      @id @default(autoincrement())
+  date DateTime @db.Date
+
+  boss   Boss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  bossId Int
+
+  entries DailyLeaderboardEntry[]
+
+  createdAt DateTime @default(now())
+
+  // 1 boss ต่อ 1 วัน
+  @@unique([date, bossId])
+  @@index([date])
+}
+
+enum STATE {
+  HIGHER
+  LOWER
+  SWEEP_FREE
+  SWEEP_PAY
+}
+
+model DailyLeaderboardEntry {
+  id Int @id @default(autoincrement())
+
+  leaderboard   DailyLeaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
+  leaderboardId Int
+
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int
+
+  score Int @default(0)
+  state STATE
+
+  createdAt DateTime @default(now())
+
+  // 1 คนมีได้ 1 score ต่อวันต่อ boss
+  @@unique([leaderboardId, playerId])
+  // ใช้ sort leaderboard เร็ว ๆ
+  @@index([leaderboardId, score])
+}
+
+model PlayerBossStat {
+  id Int @id @default(autoincrement())
+
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int
+
+  boss   Boss @relation(fields: [bossId], references: [id])
+  bossId Int
+
+  maxScore  Int @default(0)
+  lastScore Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  // 1 stat ต่อ player ต่อ boss
+  @@unique([playerId, bossId])
+  @@index([bossId, maxScore])
+}

@@ -1,0 +1,13 @@
+{
+    "leaderboardId": 14,
+    "entries": [
+        {
+            "playerId": 1,
+            "score": 123456
+        },
+        {
+            "playerId": 2,
+            "score": 555
+        }
+    ]
+}
