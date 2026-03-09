@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router";
 
-import { Avatar, Button, Dialog, DialogContent, DialogTitle, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CloudUpload, Person, Save, SaveAlt } from "@mui/icons-material";
 
 import EntryFormDialog from "../../components/EntryFormDialog/EntryFormDialog";
 
 import { createEntriesJson, getEntries } from "../../services/entryService";
+
 import type { Boss } from "../../components/LeaderBoardFormDialog/LeaderBoardFormDialog";
 
 export interface Entry {
@@ -108,32 +109,48 @@ function EntryView() {
 
     return (
         <>
-            <div>
-                <h2>Entries for Leaderboard {id}</h2>
-                <h2>วันที่ : {date}</h2>
-                <h2>บอส : {bossName}</h2>
-            </div>
-            <div>
-                <EntryFormDialog />
-                <Button
-                    component="label"
-                    variant="contained"
-                    tabIndex={-1}
-                    startIcon={<CloudUpload />}
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}
+            >
+                <Box>
+                    <Typography variant="h4" noWrap>Date : {date}</Typography>
+                    <Typography variant="h4" noWrap>Boss : {bossName}</Typography>
+                </Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1
+                    }}
                 >
-                    JSON file
-                    <VisuallyHiddenInput
-                        type="file"
-                        accept="application/json"
-                        onChange={handleFileChange}
-                    />
-                </Button>
-                <Tooltip title="Download template JSON file">
-                    <IconButton onClick={() => { }}>
-                        <SaveAlt color="action" />
-                    </IconButton>
-                </Tooltip>
-            </div>
+                    <EntryFormDialog />
+                    <Button
+                        component="label"
+                        size="small"
+                        variant="contained"
+                        tabIndex={-1}
+                        startIcon={<CloudUpload />}
+                    >
+                        JSON file
+                        <VisuallyHiddenInput
+                            type="file"
+                            accept="application/json"
+                            onChange={handleFileChange}
+                        />
+                    </Button>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        startIcon={<SaveAlt />}
+                    >
+                        JSON Template
+                    </Button>
+                </Box>
+            </Box>
             <div>
                 <h3>Score List:</h3>
             </div>
@@ -141,7 +158,7 @@ function EntryView() {
                 <Grid
                     size={{
                         xs: 12,
-                        md: 6,
+                        md: 8,
                     }}
                 >
                     <List>

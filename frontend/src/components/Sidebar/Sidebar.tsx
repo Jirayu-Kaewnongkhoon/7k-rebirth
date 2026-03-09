@@ -107,7 +107,7 @@ function Sidebar2(props: Props) {
                         <Menu />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Responsive drawer
+                        7k: Rebirth
                     </Typography>
                 </Toolbar>
             </AppBar>

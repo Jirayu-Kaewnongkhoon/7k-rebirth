@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router";
 
-import { Box, Button } from "@mui/material";
+import { Avatar, Box, Button, Grid, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Person } from "@mui/icons-material";
+
+import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
 
 import { deletePlayer, getPlayers } from "../../services/playerService";
 
 import type { Player } from "../EntryView/EntyView";
-import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
 
 function Member() {
     const navigate = useNavigate();
@@ -45,37 +47,58 @@ function Member() {
                 <h2>รายชื่อสมาชิก</h2>
                 <PlayerFormDialog />
             </Box>
-            {players?.map(player => (
-                <div
-                    key={player.id}
-                    style={{
-                        border: '1px solid black',
-                        margin: '10px',
-                        padding: '10px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+            <Grid container spacing={2}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 8,
                     }}
                 >
-                    <p>{player.name}</p>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-around' }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => navigate(`/member/${player.id}`)}
-                        >
-                            View
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => mutation.mutate(player.id)}
-                        >
-                            Delete
-                        </Button>
-                    </div>
-                </div>
-            ))}
+                    <List>
+                        {players?.map((player) => (
+                            <ListItem
+                                key={player.id}
+                                sx={{
+                                    '&:nth-of-type(even)': {
+                                        backgroundColor: '#9e9e9e22'
+                                    }
+                                }}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar>
+                                        <Person />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={player.name} />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        gap: '10px',
+                                        justifyContent: 'space-around'
+                                    }}
+                                >
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => navigate(`/member/${player.id}`)}
+                                    >
+                                        View
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        color="error"
+                                        onClick={() => mutation.mutate(player.id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                </Box>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Grid>
+            </Grid>
         </div>
     )
 }

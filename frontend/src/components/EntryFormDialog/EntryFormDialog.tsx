@@ -100,6 +100,7 @@ export default function EntryFormDialog() {
         <>
             <Button
                 variant="contained"
+                size="small"
                 color="primary"
                 onClick={handleClickOpen}
             >

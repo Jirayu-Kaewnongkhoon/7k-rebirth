@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router'
 
+import { Avatar, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+
 import { getPlayer } from '../../services/playerService';
+
 import type { Player } from '../EntryView/EntyView';
-import { getPlayerBossStat } from '../../services/playerBossStatService';
-import { Divider } from '@mui/material';
 
 function PlayerView() {
     const { id: playerId } = useParams();
@@ -12,11 +13,6 @@ function PlayerView() {
         queryKey: ['player', playerId],
         queryFn: () => getPlayer(Number(playerId)!)
     });
-
-    // const { data: stat } = useQuery({
-    //     queryKey: ['playerStat', playerId],
-    //     queryFn: () => getPlayerBossStat(Number(playerId)!)
-    // });
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -32,24 +28,40 @@ function PlayerView() {
 
     return (
         <>
-            <h3>Player ID: {playerId}</h3>
-            <p>{player?.name}</p>
+            <h2>{player?.name}</h2>
             <Divider />
             <h3>Stats</h3>
-            {player.stats.map((stat) => (
-                <div
-                    key={stat.id}
-                    style={{
-                        border: '1px solid black',
-                        margin: '10px',
-                        padding: '10px',
+            <Grid container spacing={2}>
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 8,
                     }}
                 >
-                    <p>Boss: {stat.boss.name}</p>
-                    <p>Last Score: {stat.lastScore}</p>
-                    <p>Max Score: {stat.maxScore}</p>
-                </div>
-            ))}
+                    <List>
+                        {player.stats.map((stat) => (
+                            <ListItem
+                                key={stat.id}
+                                sx={{
+                                    '&:nth-of-type(even)': {
+                                        backgroundColor: '#9e9e9e22'
+                                    }
+                                }}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sizes="small">
+                                        <pre>{stat.boss.name}</pre>
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={`Last Score: ${stat.lastScore}`}
+                                    secondary={`Max Score: ${stat.maxScore}`}
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Grid>
+            </Grid>
         </>
     )
 }

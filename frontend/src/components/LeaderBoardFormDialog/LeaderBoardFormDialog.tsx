@@ -11,10 +11,11 @@ import TextField from '@mui/material/TextField';
 
 import { createLeaderboard } from "../../services/leaderboardService";
 import { getBoss } from "../../services/bossService";
+import { Save } from "@mui/icons-material";
 
 export interface LeaderBoardFormData {
-    date: Date;
-    bossId: number;
+    date: Date | null;
+    bossId: number | null;
 }
 
 export interface Boss {
@@ -27,8 +28,8 @@ export default function LeaderboardFormDialog() {
     const [open, setOpen] = useState(false);
 
     const [data, setData] = useState<LeaderBoardFormData>({
-        date: "" as unknown as Date,
-        bossId: "" as unknown as number,
+        date: null,
+        bossId: null,
     });
 
     const { data: bossList } = useQuery<Boss[]>({
@@ -48,7 +49,10 @@ export default function LeaderboardFormDialog() {
     })
 
     const handleClickOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false);
+        setData({ bossId: null, date: null });
+    }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -71,13 +75,13 @@ export default function LeaderboardFormDialog() {
                 onClose={handleClose}
             >
                 <DialogTitle>หัวตาราง</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <TextField
                         fullWidth
                         variant="outlined"
                         type="date"
                         name="date"
-                        value={data?.date}
+                        value={data?.date || ""}
                         onChange={handleChange}
                     />
                     <TextField
@@ -86,7 +90,7 @@ export default function LeaderboardFormDialog() {
                         variant="outlined"
                         label="Boss"
                         name="bossId"
-                        value={data?.bossId}
+                        value={data?.bossId || ""}
                         onChange={handleChange}
                     >
                         <MenuItem value="">Select Boss</MenuItem>
@@ -96,7 +100,15 @@ export default function LeaderboardFormDialog() {
                             </MenuItem>
                         ))}
                     </TextField>
-                    <Button variant="contained" color="primary" onClick={() => mutation.mutate(data)}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => mutation.mutate(data)}
+                        disabled={data.bossId == null || data.date == null}
+                        loading={mutation.isPending}
+                        loadingPosition="start"
+                        startIcon={<Save />}
+                    >
                         Submit
                     </Button>
                 </DialogContent>

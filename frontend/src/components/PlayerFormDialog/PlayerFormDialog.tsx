@@ -1,25 +1,18 @@
-import { useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { Save } from "@mui/icons-material";
-
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 
-import type { Player } from "../../pages/EntryView/EntyView";
-
 import { createPlayer } from "../../services/playerService";
-import { Box } from "@mui/material";
-
 
 export default function PlayerFormDialog() {
-    const { id } = useParams();
-
     const queryClient = useQueryClient();
 
     const [name, setName] = useState('');
