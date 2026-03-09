@@ -1,10 +1,11 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
+import { Helmet } from "react-helmet-async";
 
 import MainLayout from "../layouts/MainLayout";
 import EntryView from "../pages/EntryView/EntyView";
 import LeaderBoardView from "../pages/LeaderBoardView/LeaderBoardView";
 import Member from "../pages/Member/Member";
-import Player from "../pages/Player/Player";
+import PlayerView from "../pages/PlayerView/PlayerView";
 
 export const router = createBrowserRouter([
     {
@@ -21,7 +22,12 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <LeaderBoardView />
+                        element: (
+                            <>
+                                <CustomHelmet title="สงครามชิงปราสาท" />
+                                <LeaderBoardView />
+                            </>
+                        )
                     },
                     {
                         path: ":id",
@@ -35,11 +41,16 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <Member />
+                        element: (
+                            <>
+                                <CustomHelmet title="สมาชิกกิลด์" />
+                                <Member />
+                            </>
+                        )
                     },
                     {
                         path: ":id",
-                        element: <Player />
+                        element: <PlayerView />
                     }
                 ]
             },
@@ -50,3 +61,11 @@ export const router = createBrowserRouter([
         ]
     }
 ]);
+
+function CustomHelmet({ title }: { title: string }) {
+    return (
+        <Helmet>
+            <title>{title}</title>
+        </Helmet>
+    )
+}
