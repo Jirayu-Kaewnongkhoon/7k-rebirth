@@ -22,6 +22,14 @@ const deleteLeaderboard = async (id: number) => {
     return result;
 }
 
+const getLeaderboard = async (date: Date) => {
+    const leaderboard = await prisma.dailyLeaderboard.findFirst({
+        where: { date },
+        include: { boss: true },
+    });
+    return leaderboard;
+}
+
 const getLeaderboards = async (page: number) => {
     const { start, nextWeek } = getWeekRange(page);
 
@@ -49,6 +57,7 @@ const getLeaderboardPageCount = async () => {
 export default {
     createLeaderboard,
     deleteLeaderboard,
+    getLeaderboard,
     getLeaderboards,
     getLeaderboardPageCount,
 };

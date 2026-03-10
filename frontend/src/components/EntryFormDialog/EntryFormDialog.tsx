@@ -92,7 +92,7 @@ export default function EntryFormDialog() {
         mutationFn: createEntries,
         onSuccess: () => {
             handleClose();
-            queryClient.invalidateQueries({ queryKey: ['entries'] });
+            queryClient.invalidateQueries({ queryKey: ['entries', id] });
         }
     })
 

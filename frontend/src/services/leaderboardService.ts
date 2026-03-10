@@ -24,6 +24,15 @@ const deleteLeaderboard = async (id: number) => {
     return data.data;
 }
 
+const getLeaderboard = async (date: string) => {
+    const response = await fetch(`http://localhost:3300/leaderboard/${date}`);
+    if (!response.ok) {
+        throw new Error('leaderboard fetch failed');
+    }
+    const data = await response.json();
+    return data.data;
+}
+
 const getLeaderboards = async (page: number) => {
     const response = await fetch('http://localhost:3300/leaderboard?page=' + page);
     if (!response.ok) {
@@ -45,6 +54,7 @@ const getLeaderboardPageCount = async () => {
 export {
     createLeaderboard,
     deleteLeaderboard,
+    getLeaderboard,
     getLeaderboards,
     getLeaderboardPageCount,
 };

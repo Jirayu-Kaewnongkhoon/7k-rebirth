@@ -24,6 +24,16 @@ const deleteLeaderboard = async (req: Request, res: Response<BaseResponse>, next
     }
 }
 
+const getLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const date = new Date(req.params.date);
+        const result = await leaderboardService.getLeaderboard(date);
+        res.status(200).json({ data: result, success: true });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getLeaderboards = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const page = req.query.page;
@@ -46,6 +56,7 @@ const getLeaderboardPageCount = async (_req: Request, res: Response<BaseResponse
 export {
     createLeaderboard,
     deleteLeaderboard,
+    getLeaderboard,
     getLeaderboards,
     getLeaderboardPageCount
 };
