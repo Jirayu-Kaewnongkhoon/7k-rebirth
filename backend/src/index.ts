@@ -9,6 +9,7 @@ import { prisma } from "./prisma";
 import entryRoute from './routes/entryRoute';
 import leaderboardRoute from './routes/leaderboardRoute';
 import playerRoute from './routes/playerRoute';
+import bossRoute from './routes/bossRoute';
 // import playerBossStatRoute from './routes/playerBossStatRoute';
 
 import { globalErrorHandler } from './middlewares/globalErrorHanlder';
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/leaderboard', leaderboardRoute);
 app.use('/entry', entryRoute);
 app.use('/player', playerRoute);
+app.use('/boss', bossRoute);
 // app.use('/playerBossStat', playerBossStatRoute);
 
 app.get('/', (_req: Request, res: Response) => {
@@ -33,11 +35,6 @@ app.get('/', (_req: Request, res: Response) => {
 
 app.get('/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok', uptime: process.uptime() });
-});
-
-app.get('/boss', async (_req: Request, res: Response) => {
-    const boss = await prisma.boss.findMany();
-    res.json({ status: 'ok', data: boss });
 });
 
 app.use((_req: Request, res: Response) => {
