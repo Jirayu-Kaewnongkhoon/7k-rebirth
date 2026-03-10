@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import leaderboardService from '../services/leaderboardService';
+
 import { BaseResponse } from "../models/response";
 
 const createLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
@@ -23,13 +24,28 @@ const deleteLeaderboard = async (req: Request, res: Response<BaseResponse>, next
     }
 }
 
-const getLeaderboards = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getLeaderboards = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const result = await leaderboardService.getLeaderboards();
+        const page = req.query.page;
+        const result = await leaderboardService.getLeaderboards(Number(page));
         res.status(200).json({ data: result, success: true });
     } catch (error) {
         next(error);
     }
 }
 
-export { createLeaderboard, deleteLeaderboard, getLeaderboards };
+const getLeaderboardPageCount = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const result = await leaderboardService.getLeaderboardPageCount();
+        res.status(200).json({ data: result, success: true });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export {
+    createLeaderboard,
+    deleteLeaderboard,
+    getLeaderboards,
+    getLeaderboardPageCount
+};

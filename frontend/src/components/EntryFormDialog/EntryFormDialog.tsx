@@ -33,7 +33,7 @@ export default function EntryFormDialog() {
         queryFn: getPlayers
     });
     const { data: scoreList } = useQuery<Entry[]>({
-        queryKey: ['entries'],
+        queryKey: ['entries', id],
         queryFn: () => getEntries(id!)
     });
 

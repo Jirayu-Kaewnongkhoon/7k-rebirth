@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router";
 
-import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CloudUpload, Person, Save, SaveAlt } from "@mui/icons-material";
 
@@ -58,14 +58,14 @@ function EntryView() {
     const [previewFile, setPreviewFile] = useState(null);
 
     const { data: scoreList, isLoading, isError } = useQuery<Entry[]>({
-        queryKey: ['entries'],
+        queryKey: ['entries', id],
         queryFn: () => getEntries(id!)
     });
 
     const mutation = useMutation({
         mutationFn: createEntriesJson,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entries'] });
+            queryClient.invalidateQueries({ queryKey: ['entries', id] });
             setFile(null);
         }
     });
@@ -97,7 +97,9 @@ function EntryView() {
         mutation.mutate(formData);
     }
 
-    const handleDownloadTemplate = () => { }
+    const handleDownloadTemplate = () => {
+        // TODO: load template with leaderboardId
+    }
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -146,6 +148,7 @@ function EntryView() {
                         size="small"
                         variant="contained"
                         startIcon={<SaveAlt />}
+                        onClick={handleDownloadTemplate}
                     >
                         JSON Template
                     </Button>
