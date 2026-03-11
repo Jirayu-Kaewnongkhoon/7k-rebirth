@@ -5,11 +5,11 @@ import { Avatar, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText } f
 
 import { getPlayer } from '../../services/playerService';
 
-import type { Player } from '../EntryView/EntyView';
+import type { IPlayerWithStats } from '../../types/player';
 
 function PlayerView() {
     const { id: playerId } = useParams();
-    const { data: player, isLoading, isError } = useQuery<Player>({
+    const { data: player, isLoading, isError } = useQuery<IPlayerWithStats>({
         queryKey: ['player', playerId],
         queryFn: () => getPlayer(Number(playerId)!)
     });

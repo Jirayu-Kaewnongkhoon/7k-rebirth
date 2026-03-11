@@ -8,13 +8,13 @@ import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog
 
 import { deletePlayer, getPlayers } from "../../services/playerService";
 
-import type { Player } from "../EntryView/EntyView";
+import type { IPlayer } from "../../types/player";
 
 function Member() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const { data: players, isLoading, isError } = useQuery<Player[]>({
+    const { data: players, isLoading, isError } = useQuery<IPlayer[]>({
         queryKey: ['players'],
         queryFn: getPlayers,
     });
