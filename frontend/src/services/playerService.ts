@@ -1,4 +1,4 @@
-import type { Player } from "../pages/EntryView/EntyView";
+import type { IPlayer, IPlayerWithStats } from "../types/player";
 
 const createPlayer = async (playerName: string) => {
     const response = await fetch('http://localhost:3300/player', {
@@ -24,7 +24,7 @@ const deletePlayer = async (id: number) => {
     return data.data;
 }
 
-const getPlayer = async (playerId: number): Promise<Player> => {
+const getPlayer = async (playerId: number): Promise<IPlayerWithStats> => {
     const response = await fetch(`http://localhost:3300/player/${playerId}`);
     if (!response.ok) {
         throw new Error('player fetch failed');
@@ -33,7 +33,7 @@ const getPlayer = async (playerId: number): Promise<Player> => {
     return data.data;
 }
 
-const getPlayers = async (): Promise<Player[]> => {
+const getPlayers = async (): Promise<IPlayer[]> => {
     const response = await fetch('http://localhost:3300/player');
     if (!response.ok) {
         throw new Error('players fetch failed');

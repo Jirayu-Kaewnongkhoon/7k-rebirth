@@ -6,43 +6,12 @@ import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Grid,
 import { styled } from "@mui/material/styles";
 import { CloudUpload, Person, Save, SaveAlt } from "@mui/icons-material";
 
-import EntryFormDialogCalendar from "../../components/EntryFormDialog/EntryFormDialogCalendar";
+import CastleEntryFormDialog from "../../components/CastleEntryFormDialog/CastleEntryFormDialog";
 
-import { createEntriesJson, getEntries } from "../../services/entryService";
-import { createLeaderboard, getLeaderboard } from "../../services/leaderboardService";
+import type { ICastleEntry, ICastleLeaderBoard } from "../../types/castle";
 
-import type { Boss } from "../../components/LeaderBoardFormDialog/LeaderBoardFormDialog";
-
-export interface LeaderBoardData {
-    id: number;
-    boss: {
-        name: string;
-    };
-    date: string;
-}
-
-export interface Entry {
-    id: number;
-    player: Player;
-    score: number;
-    state: string;
-}
-
-export interface Player {
-    id: number;
-    name: string;
-    isActive: boolean;
-    stats: PlayerBossStats[]
-}
-
-export interface PlayerBossStats {
-    id: number
-    playerId: number
-    bossId: number
-    boss: Boss
-    maxScore: number
-    lastScore: number
-}
+import { createEntriesJson, getEntries } from "../../services/castleEntryService";
+import { createLeaderboard, getLeaderboard } from "../../services/castleLeaderboardService";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -56,7 +25,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-function EntryCalendar() {
+function CastleEntry() {
     const { date } = useParams();
     const queryClient = useQueryClient();
 
@@ -67,7 +36,7 @@ function EntryCalendar() {
         data: leaderboard,
         isLoading: leaderboardLoading,
         isError: leaderboardError
-    } = useQuery<LeaderBoardData>({
+    } = useQuery<ICastleLeaderBoard>({
         queryKey: ['leaderboard', date],
         queryFn: () => getLeaderboard(date!),
     });
@@ -172,7 +141,7 @@ function EntryCalendar() {
                         gap: 1
                     }}
                 >
-                    <EntryFormDialogCalendar leaderboardId={leaderboard?.id!} />
+                    <CastleEntryFormDialog leaderboardId={leaderboard?.id!} />
                     <Button
                         component="label"
                         size="small"
@@ -225,7 +194,7 @@ function EntryCalendar() {
     )
 }
 
-export default EntryCalendar
+export default CastleEntry
 
 function Entries({ id }: { id: number }) {
 
@@ -233,7 +202,7 @@ function Entries({ id }: { id: number }) {
         data: entries,
         isLoading: entriesLoading,
         isError: entriesError
-    } = useQuery<Entry[]>({
+    } = useQuery<ICastleEntry[]>({
         queryKey: ['entries', id],
         queryFn: () => getEntries(id!.toString()),
         enabled: !!id

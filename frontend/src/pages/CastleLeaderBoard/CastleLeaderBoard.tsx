@@ -4,7 +4,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type DateClickArg } from "@fullcalendar/interaction"
 
-function LeaderBoardCalendar() {
+function CastleLeaderBoard() {
     const navigate = useNavigate();
 
     const handleDateClick = (arg: DateClickArg) => {
@@ -19,4 +19,4 @@ function LeaderBoardCalendar() {
     )
 }
 
-export default LeaderBoardCalendar
+export default CastleLeaderBoard

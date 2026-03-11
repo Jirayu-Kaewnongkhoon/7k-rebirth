@@ -12,17 +12,18 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-import type { Entry, Player } from "../../pages/EntryView/EntyView";
+import type { ICastleEntry } from "../../types/castle";
+import type { IPlayer } from "../../types/player";
 
 import { getPlayers } from "../../services/playerService";
-import { createEntries, getEntries } from "../../services/entryService";
+import { createEntries, getEntries } from "../../services/castleEntryService";
 
 interface EntryInput {
     playerId: number | null
     score: number
 }
 
-export default function EntryFormDialogCalendar({
+export default function CastleEntryFormDialog({
     leaderboardId
 }: {
     leaderboardId: number
@@ -30,11 +31,11 @@ export default function EntryFormDialogCalendar({
 
     const queryClient = useQueryClient();
 
-    const { data: playerOptions } = useQuery<Player[]>({
+    const { data: playerOptions } = useQuery<IPlayer[]>({
         queryKey: ['players'],
         queryFn: getPlayers
     });
-    const { data: scoreList } = useQuery<Entry[]>({
+    const { data: scoreList } = useQuery<ICastleEntry[]>({
         queryKey: ['entries', leaderboardId],
         queryFn: () => getEntries(leaderboardId.toString()),
     });

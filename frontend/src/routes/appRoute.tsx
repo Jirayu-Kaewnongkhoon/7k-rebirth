@@ -3,12 +3,10 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router";
 
 import MainLayout from "../layouts/MainLayout";
 import BossGuildView from "../pages/BossGuildView/BossGuildView";
-import EntryView from "../pages/EntryView/EntyView";
-import LeaderBoardView from "../pages/LeaderBoardView/LeaderBoardView";
+import CastleEntry from "../pages/CastleEntry/CastleEntry";
+import CastleLeaderBoard from "../pages/CastleLeaderBoard/CastleLeaderBoard";
 import Member from "../pages/Member/Member";
 import PlayerView from "../pages/PlayerView/PlayerView";
-import LeaderBoardCalendar from "../pages/LeaderBoardView/LeaderBoardCalendar";
-import EntryCalendar from "../pages/EntryView/EntyCalendar";
 
 export const router = createBrowserRouter([
     {
@@ -23,31 +21,18 @@ export const router = createBrowserRouter([
                 path: "leaderboard",
                 element: <Outlet />,
                 children: [
-                    // {
-                    //     index: true,
-                    //     element: (
-                    //         <>
-                    //             <CustomHelmet title="สงครามชิงปราสาท" />
-                    //             <LeaderBoardView />
-                    //         </>
-                    //     )
-                    // },
-                    // {
-                    //     path: ":id",
-                    //     element: <EntryView />
-                    // },
                     {
                         index: true,
                         element: (
                             <>
                                 <CustomHelmet title="สงครามชิงปราสาท" />
-                                <LeaderBoardCalendar />
+                                <CastleLeaderBoard />
                             </>
                         )
                     },
                     {
                         path: ":date",
-                        element: <EntryCalendar />
+                        element: <CastleEntry />
                     },
                 ]
             },
@@ -66,7 +51,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: ":id",
-                        element: <EntryView />
+                        element: <>boss guild id</>
                     },
                 ]
             },
