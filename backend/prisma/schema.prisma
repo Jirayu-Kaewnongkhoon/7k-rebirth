@@ -22,8 +22,9 @@ model Player {
   isActive Boolean   @default(true)
 
   // Relations
-  stats   PlayerBossStat[]
-  entries DailyLeaderboardEntry[]
+  stats            PlayerBossStat[]
+  castleEntries    CastleEntry[]
+  guildBossEntries GuildBossEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,33 +32,36 @@ model Player {
   @@index([isActive])
 }
 
-model Boss {
+// Castle Rush
+model CastleBoss {
   id      Int    @id @default(autoincrement())
   name    String
   weekday Int // 0 = Sunday, 6 = Saturday
 
-  leaderboards DailyLeaderboard[]
+  leaderboards CastleLeaderboard[]
   stats        PlayerBossStat[]
 
   createdAt DateTime @default(now())
 
   @@unique([weekday]) // ป้องกันซ้ำวัน
+  @@map("Boss")
 }
 
-model DailyLeaderboard {
+model CastleLeaderboard {
   id   Int      @id @default(autoincrement())
   date DateTime @db.Date
 
-  boss   Boss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  boss   CastleBoss @relation(fields: [bossId], references: [id], onDelete: Cascade)
   bossId Int
 
-  entries DailyLeaderboardEntry[]
+  entries CastleEntry[]
 
   createdAt DateTime @default(now())
 
   // 1 boss ต่อ 1 วัน
   @@unique([date, bossId])
   @@index([date])
+  @@map("DailyLeaderboard")
 }
 
 enum STATE {
@@ -67,16 +71,16 @@ enum STATE {
   SWEEP_PAY
 }
 
-model DailyLeaderboardEntry {
+model CastleEntry {
   id Int @id @default(autoincrement())
 
-  leaderboard   DailyLeaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
+  leaderboard   CastleLeaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
   leaderboardId Int
 
   player   Player @relation(fields: [playerId], references: [id])
   playerId Int
 
-  score Int @default(0)
+  score Int   @default(0)
   state STATE
 
   createdAt DateTime @default(now())
@@ -85,6 +89,7 @@ model DailyLeaderboardEntry {
   @@unique([leaderboardId, playerId])
   // ใช้ sort leaderboard เร็ว ๆ
   @@index([leaderboardId, score])
+  @@map("DailyLeaderboardEntry")
 }
 
 model PlayerBossStat {
@@ -93,7 +98,7 @@ model PlayerBossStat {
   player   Player @relation(fields: [playerId], references: [id])
   playerId Int
 
-  boss   Boss @relation(fields: [bossId], references: [id])
+  boss   CastleBoss @relation(fields: [bossId], references: [id])
   bossId Int
 
   maxScore  Int @default(0)
@@ -104,4 +109,38 @@ model PlayerBossStat {
   // 1 stat ต่อ player ต่อ boss
   @@unique([playerId, bossId])
   @@index([bossId, maxScore])
+}
+
+// Boss Guild
+model GuildBoss {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  entries GuildBossEntry[]
+}
+
+model GuildBossSeason {
+  id        Int      @id @default(autoincrement())
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+
+  entries GuildBossEntry[]
+}
+
+model GuildBossEntry {
+  id Int @id @default(autoincrement())
+
+  season   GuildBossSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId Int
+
+  boss   GuildBoss @relation(fields: [bossId], references: [id])
+  bossId Int
+
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int
+
+  score Int
+  hits  Int
+
+  @@unique([bossId, playerId])
 }

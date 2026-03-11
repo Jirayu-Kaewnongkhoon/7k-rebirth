@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { getBoss } from '../controllers/bossController';
+import { getBoss } from '../controllers/castleBossController';
 
 const router = Router();
 

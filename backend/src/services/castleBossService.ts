@@ -1,7 +1,7 @@
 import { prisma } from "../prisma";
 
 const getBoss = async () => {
-    const boss = await prisma.boss.findMany();
+    const boss = await prisma.castleBoss.findMany();
     return boss;
 }
 

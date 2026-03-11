@@ -6,10 +6,10 @@ import morgan from 'morgan';
 import { prisma } from "./prisma";
 
 // routes
-import entryRoute from './routes/entryRoute';
-import leaderboardRoute from './routes/leaderboardRoute';
+import castleEntryRoute from './routes/castleEntryRoute';
+import castleLeaderboardRoute from './routes/castleLeaderboardRoute';
 import playerRoute from './routes/playerRoute';
-import bossRoute from './routes/bossRoute';
+import castleBossRoute from './routes/castleBossRoute';
 // import playerBossStatRoute from './routes/playerBossStatRoute';
 
 import { globalErrorHandler } from './middlewares/globalErrorHanlder';
@@ -23,10 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // apply routes
-app.use('/leaderboard', leaderboardRoute);
-app.use('/entry', entryRoute);
+app.use('/castleLeaderboard', castleLeaderboardRoute);
+app.use('/castleEntry', castleEntryRoute);
 app.use('/player', playerRoute);
-app.use('/boss', bossRoute);
+app.use('/castleBoss', castleBossRoute);
 // app.use('/playerBossStat', playerBossStatRoute);
 
 app.get('/', (_req: Request, res: Response) => {
