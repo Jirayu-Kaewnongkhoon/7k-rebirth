@@ -6,8 +6,8 @@ import { BaseResponse } from "../models/response";
 
 const createLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const data = req.body;
-        await leaderboardService.createLeaderboard(data);
+        const { date } = req.body;
+        await leaderboardService.createLeaderboard(date);
         res.status(201).json({ message: 'Leaderboard created successfully', success: true });
     } catch (error) {
         next(error);

@@ -9,7 +9,7 @@ import { CloudUpload, Person, Save, SaveAlt } from "@mui/icons-material";
 import EntryFormDialogCalendar from "../../components/EntryFormDialog/EntryFormDialogCalendar";
 
 import { createEntriesJson, getEntries } from "../../services/entryService";
-import { getLeaderboard } from "../../services/leaderboardService";
+import { createLeaderboard, getLeaderboard } from "../../services/leaderboardService";
 
 import type { Boss } from "../../components/LeaderBoardFormDialog/LeaderBoardFormDialog";
 
@@ -72,11 +72,18 @@ function EntryCalendar() {
         queryFn: () => getLeaderboard(date!),
     });
 
-    const mutation = useMutation({
+    const entryMutation = useMutation({
         mutationFn: createEntriesJson,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['entries', leaderboard?.id] });
             setFile(null);
+        }
+    });
+
+    const leaderboardMutation = useMutation({
+        mutationFn: createLeaderboard,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['leaderboard', date] });
         }
     });
 
@@ -104,7 +111,7 @@ function EntryCalendar() {
     const handleConfirmUpload = () => {
         const formData = new FormData();
         formData.append('file', file!);
-        mutation.mutate(formData);
+        entryMutation.mutate(formData);
     }
 
     const handleDownloadTemplate = () => {
@@ -115,8 +122,23 @@ function EntryCalendar() {
         return <div>Loading...</div>;
     }
 
-    if (leaderboardError || !leaderboard) {
+    if (leaderboardError) {
         return <div>Error loading leaderboard.</div>;
+    }
+
+    if (!leaderboard) {
+        return (
+            <Button
+                variant="contained"
+                onClick={() => {
+                    leaderboardMutation.mutate(date!);
+                }}
+                loading={leaderboardMutation.isPending}
+                loadingPosition="start"
+            >
+                เพิ่มหัวตาราง
+            </Button>
+        )
     }
 
     return (
@@ -191,7 +213,7 @@ function EntryCalendar() {
                         variant="contained"
                         color="primary"
                         onClick={handleConfirmUpload}
-                        loading={mutation.isPending}
+                        loading={entryMutation.isPending}
                         loadingPosition="start"
                         startIcon={<Save />}
                     >

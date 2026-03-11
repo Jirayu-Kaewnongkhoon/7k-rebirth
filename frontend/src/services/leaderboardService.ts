@@ -1,13 +1,11 @@
-import type { LeaderBoardFormData } from "../components/LeaderBoardFormDialog/LeaderBoardFormDialog";
-
-const createLeaderboard = async (leaderboardData: LeaderBoardFormData) => {
+const createLeaderboard = async (date: string) => {
     const response = await fetch("http://localhost:3300/leaderboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(leaderboardData),
+        body: JSON.stringify({ date }),
     })
     if (!response.ok) {
-        throw new Error('delete leaderboard failed');
+        throw new Error('create leaderboard failed');
     }
     const data = await response.json();
     return data.data;

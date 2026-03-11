@@ -16,3 +16,9 @@ export function getWeekRange(page: number) {
 
     return { start, nextWeek };
 }
+
+export function getWeekday(dateStr: string) {
+    const date = new Date(dateStr);
+    const weekday = (date.getDay() + 6) % 7;
+    return weekday;
+}

@@ -103,7 +103,10 @@ export default function LeaderboardFormDialog() {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => mutation.mutate(data)}
+                        onClick={() => {
+                            alert('re-work')
+                            // mutation.mutate(data);
+                        }}
                         disabled={data.bossId == null || data.date == null}
                         loading={mutation.isPending}
                         loadingPosition="start"

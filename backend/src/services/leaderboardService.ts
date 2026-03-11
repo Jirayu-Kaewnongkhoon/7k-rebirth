@@ -1,19 +1,19 @@
 import { prisma } from "../prisma";
 
-import { getWeekRange } from "../utils/date";
+import { getWeekday, getWeekRange } from "../utils/date";
 
-interface Leaderboard {
-    date: Date;
-    bossId: number;
-}
+const createLeaderboard = async (date: string) => {
+    const weekday = getWeekday(date);
 
-const createLeaderboard = async (leaderboardData: Leaderboard) => {
     const result = await prisma.dailyLeaderboard.create({
         data: {
-            ...leaderboardData,
-            date: new Date(leaderboardData.date),
+            date: new Date(date),
+            boss: {
+                connect: { weekday }
+            }
         }
     });
+
     return result;
 }
 
