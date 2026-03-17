@@ -31,28 +31,8 @@ const getLeaderboard = async (date: string) => {
     return data.data;
 }
 
-const getLeaderboards = async (page: number) => {
-    const response = await fetch('http://localhost:3300/castleLeaderboard?page=' + page);
-    if (!response.ok) {
-        throw new Error('leaderboard fetch failed');
-    }
-    const data = await response.json();
-    return data.data;
-}
-
-const getLeaderboardPageCount = async () => {
-    const response = await fetch('http://localhost:3300/castleLeaderboard/count');
-    if (!response.ok) {
-        throw new Error('leaderboard page count fetch failed');
-    }
-    const data = await response.json();
-    return data.data;
-}
-
 export {
     createLeaderboard,
     deleteLeaderboard,
     getLeaderboard,
-    getLeaderboards,
-    getLeaderboardPageCount,
 };

@@ -34,29 +34,8 @@ const getLeaderboard = async (req: Request, res: Response<BaseResponse>, next: N
     }
 }
 
-const getLeaderboards = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
-    try {
-        const page = req.query.page;
-        const result = await castleLeaderboardService.getLeaderboards(Number(page));
-        res.status(200).json({ data: result, success: true });
-    } catch (error) {
-        next(error);
-    }
-}
-
-const getLeaderboardPageCount = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
-    try {
-        const result = await castleLeaderboardService.getLeaderboardPageCount();
-        res.status(200).json({ data: result, success: true });
-    } catch (error) {
-        next(error);
-    }
-}
-
 export {
     createLeaderboard,
     deleteLeaderboard,
     getLeaderboard,
-    getLeaderboards,
-    getLeaderboardPageCount
 };
