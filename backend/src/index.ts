@@ -1,15 +1,16 @@
 import 'dotenv/config';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import { prisma } from "./prisma";
 
 // routes
+import castleBossRoute from './routes/castleBossRoute';
 import castleEntryRoute from './routes/castleEntryRoute';
 import castleLeaderboardRoute from './routes/castleLeaderboardRoute';
+import guildBossSeasonRoute from './routes/guildBossSeasonRoute';
 import playerRoute from './routes/playerRoute';
-import castleBossRoute from './routes/castleBossRoute';
 // import playerBossStatRoute from './routes/playerBossStatRoute';
 
 import { globalErrorHandler } from './middlewares/globalErrorHanlder';
@@ -27,6 +28,7 @@ app.use('/castleLeaderboard', castleLeaderboardRoute);
 app.use('/castleEntry', castleEntryRoute);
 app.use('/player', playerRoute);
 app.use('/castleBoss', castleBossRoute);
+app.use('/guildBossSeason', guildBossSeasonRoute);
 // app.use('/playerBossStat', playerBossStatRoute);
 
 app.get('/', (_req: Request, res: Response) => {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router";
 
-import { Avatar, Box, Button, Grid, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Avatar, Box, Button, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import { Person } from "@mui/icons-material";
 
 import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
@@ -44,7 +44,7 @@ function Member() {
                     alignItems: 'center'
                 }}
             >
-                <h2>รายชื่อสมาชิก</h2>
+                <Typography variant="h5" noWrap>รายชื่อสมาชิก</Typography>
                 <PlayerFormDialog />
             </Box>
             <Grid container spacing={2}>

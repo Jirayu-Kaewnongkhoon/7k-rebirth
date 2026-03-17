@@ -8,7 +8,7 @@ const createPlayer = async (req: Request, res: Response<BaseResponse>, next: Nex
     try {
         const playerName = req.body.name;
         await playerService.createPlayer(playerName);
-        res.status(201).json({ success: true, message: 'PLayer created successfully' });
+        res.status(201).json({ success: true, message: 'Player created successfully' });
     } catch (error) {
         next(error);
     }
@@ -37,7 +37,7 @@ const deletePlayer = async (req: Request, res: Response<BaseResponse>, next: Nex
     try {
         const playerId = Number(req.params.id);
         await playerService.deletePlayer(playerId);
-        res.status(201).json({ success: true, message: 'Player deleted successfully' });
+        res.status(200).json({ success: true, message: 'Player deleted successfully' });
     } catch (error) {
         next(error);
     }

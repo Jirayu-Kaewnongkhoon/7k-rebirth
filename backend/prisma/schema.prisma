@@ -142,5 +142,5 @@ model GuildBossEntry {
   score Int
   hits  Int
 
-  @@unique([bossId, playerId])
+  @@unique([seasonId, bossId, playerId])
 }
