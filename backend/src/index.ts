@@ -10,6 +10,7 @@ import castleBossRoute from './routes/castleBossRoute';
 import castleEntryRoute from './routes/castleEntryRoute';
 import castleLeaderboardRoute from './routes/castleLeaderboardRoute';
 import guildBossSeasonRoute from './routes/guildBossSeasonRoute';
+import guildBossEntryRoute from './routes/guildBossEntryRoute';
 import playerRoute from './routes/playerRoute';
 // import playerBossStatRoute from './routes/playerBossStatRoute';
 
@@ -29,6 +30,7 @@ app.use('/castleEntry', castleEntryRoute);
 app.use('/player', playerRoute);
 app.use('/castleBoss', castleBossRoute);
 app.use('/guildBossSeason', guildBossSeasonRoute);
+app.use('/guildBossEntry', guildBossEntryRoute);
 // app.use('/playerBossStat', playerBossStatRoute);
 
 app.get('/', (_req: Request, res: Response) => {
