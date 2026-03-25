@@ -1,7 +1,7 @@
 interface EntryData {
     leaderboardId: number;
     entries: {
-        playerId: number | null;
+        playerId: number;
         score: number;
     }[];
 }

@@ -24,14 +24,25 @@ const createGuildBossSeason = async (startDateStr: string) => {
     return season;
 }
 
-const getSeasons = async () => {
+const getSeasons = async ({ page, limit }: { page: number, limit: number }) => {
     const seasons = await prisma.guildBossSeason.findMany({
+        take: limit,
+        skip: (page - 1) * limit,
         orderBy: { startDate: 'desc' }
     });
-    return seasons;
+    const rowCount = await prisma.guildBossSeason.count();
+    return { data: seasons, rowCount };
+}
+
+const getGuildBoss = async () => {
+    const boss = await prisma.guildBoss.findMany({
+        orderBy: { id: 'asc' }
+    });
+    return boss;
 }
 
 export default {
     createGuildBossSeason,
     getSeasons,
+    getGuildBoss
 };

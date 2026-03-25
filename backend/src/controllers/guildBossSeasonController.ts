@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
 
 import { BaseResponse } from "../models/response";
 
@@ -14,13 +15,27 @@ const createGuildBossSeason = async (req: Request, res: Response<BaseResponse>, 
     }
 }
 
-const getSeasons = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getSeasonsSchema = z.object({
+    page: z.coerce.number().default(1),
+    limit: z.coerce.number().default(10)
+});
+const getSeasons = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const seasons = await guildBossSeasonService.getSeasons();
-        res.status(200).json({ success: true, data: seasons });
+        const { page, limit } = getSeasonsSchema.parse(req.query);
+        const { data, rowCount } = await guildBossSeasonService.getSeasons({ page, limit });
+        res.status(200).json({ success: true, data: { seasons: data, rowCount } });
     } catch (error) {
         next(error);
     }
 }
 
-export { createGuildBossSeason, getSeasons };
+const getGuildBoss = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const boss = await guildBossSeasonService.getGuildBoss();
+        res.status(200).json({ success: true, data: boss });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { createGuildBossSeason, getSeasons, getGuildBoss };

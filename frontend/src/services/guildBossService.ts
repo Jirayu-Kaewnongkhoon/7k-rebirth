@@ -11,10 +11,19 @@ const createGuildBossSeason = async (startDate: string) => {
     return data.data;
 }
 
-const getSeasons = async () => {
-    const response = await fetch('http://localhost:3300/guildBossSeason');
+const getSeasons = async (page: number, limit: number) => {
+    const response = await fetch(`http://localhost:3300/guildBossSeason?page=${page}&limit=${limit}`);
     if (!response.ok) {
         throw new Error('seasons fetch failed');
+    }
+    const data = await response.json();
+    return data.data;
+}
+
+const getGuildBoss = async () => {
+    const response = await fetch('http://localhost:3300/guildBossSeason/boss');
+    if (!response.ok) {
+        throw new Error('boss fetch failed');
     }
     const data = await response.json();
     return data.data;
@@ -23,4 +32,5 @@ const getSeasons = async () => {
 export {
     createGuildBossSeason,
     getSeasons,
+    getGuildBoss,
 };

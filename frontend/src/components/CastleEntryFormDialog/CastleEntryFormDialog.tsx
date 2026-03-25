@@ -86,7 +86,12 @@ export default function CastleEntryFormDialog({
     const handleSubmit = () => {
         const data = {
             leaderboardId,
-            entries: entries.filter(e => e.playerId !== null) as EntryInput[] // กรองเฉพาะ entry ที่มี playerId ไม่เป็น null
+            entries: entries
+                .filter(e => e.playerId !== null) // กรองเฉพาะ entry ที่มี playerId ไม่เป็น null
+                .map(e => ({
+                    playerId: e.playerId as number,
+                    score: e.score,
+                }))
         }
         mutation.mutate(data);
     }
