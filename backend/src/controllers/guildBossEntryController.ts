@@ -34,7 +34,6 @@ const createEntriesJson = async (req: Request, res: Response<BaseResponse>, next
         if (!req.file) throw new Error('No file uploaded');
 
         const data = JSON.parse(req.file.buffer.toString());
-        console.log(data);
 
         await guildBossEntryService.createEntries(data);
         res.status(201).json({ success: true, message: 'Entries created successfully' });

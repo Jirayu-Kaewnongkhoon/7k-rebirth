@@ -9,6 +9,7 @@ import { prisma } from "./prisma";
 import castleBossRoute from './routes/castleBossRoute';
 import castleEntryRoute from './routes/castleEntryRoute';
 import castleLeaderboardRoute from './routes/castleLeaderboardRoute';
+import guildBossRoute from './routes/guildBossRoute';
 import guildBossSeasonRoute from './routes/guildBossSeasonRoute';
 import guildBossEntryRoute from './routes/guildBossEntryRoute';
 import playerRoute from './routes/playerRoute';
@@ -30,6 +31,7 @@ app.use('/castleEntry', castleEntryRoute);
 app.use('/player', playerRoute);
 app.use('/castleBoss', castleBossRoute);
 app.use('/guildBossSeason', guildBossSeasonRoute);
+app.use('/guildBoss', guildBossRoute);
 app.use('/guildBossEntry', guildBossEntryRoute);
 // app.use('/playerBossStat', playerBossStatRoute);
 
