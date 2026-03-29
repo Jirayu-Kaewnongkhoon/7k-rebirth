@@ -34,15 +34,15 @@ const getSeasons = async ({ page, limit }: { page: number, limit: number }) => {
     return { data: seasons, rowCount };
 }
 
-const getGuildBoss = async () => {
-    const boss = await prisma.guildBoss.findMany({
-        orderBy: { id: 'asc' }
+const getSeason = async (id: number) => {
+    const season = await prisma.guildBossSeason.findUnique({
+        where: { id }
     });
-    return boss;
+    return season;
 }
 
 export default {
     createGuildBossSeason,
     getSeasons,
-    getGuildBoss
+    getSeason
 };

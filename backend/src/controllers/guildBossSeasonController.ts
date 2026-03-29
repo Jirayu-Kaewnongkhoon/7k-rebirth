@@ -29,13 +29,17 @@ const getSeasons = async (req: Request, res: Response<BaseResponse>, next: NextF
     }
 }
 
-const getGuildBoss = async (_req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getSeasonSchema = z.object({
+    id: z.coerce.number()
+});
+const getSeason = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const boss = await guildBossSeasonService.getGuildBoss();
-        res.status(200).json({ success: true, data: boss });
+        const { id } = getSeasonSchema.parse(req.params);
+        const result = await guildBossSeasonService.getSeason(id);
+        res.status(200).json({ success: true, data: result });
     } catch (error) {
         next(error);
     }
 }
 
-export { createGuildBossSeason, getSeasons, getGuildBoss };
+export { createGuildBossSeason, getSeasons, getSeason };
