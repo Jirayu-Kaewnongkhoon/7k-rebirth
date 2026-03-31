@@ -25,7 +25,7 @@ function GuildBossView() {
         isLoading,
         isError
     } = useQuery<IGuildBossSeasonResponse>({
-        queryKey: ['guildBossSeason', page],
+        queryKey: ['guild-boss-seasons', { page }],
         queryFn: () => getSeasons(page, ROW_PER_PAGE),
     });
 
@@ -35,7 +35,7 @@ function GuildBossView() {
 
     return (
         <>
-            <GuildBossSeasonFormDialog />
+            <GuildBossSeasonFormDialog page={page} />
 
             <GuildBossSeasonList
                 seasons={seasons}

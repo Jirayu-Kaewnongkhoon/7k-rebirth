@@ -36,7 +36,7 @@ export default function CastleEntryFormDialog({
         queryFn: getPlayers
     });
     const { data: scoreList } = useQuery<ICastleEntry[]>({
-        queryKey: ['entries', leaderboardId],
+        queryKey: ['castle-entries', leaderboardId],
         queryFn: () => getEntries(leaderboardId.toString()),
     });
 
@@ -100,7 +100,7 @@ export default function CastleEntryFormDialog({
         mutationFn: createEntries,
         onSuccess: () => {
             handleClose();
-            queryClient.invalidateQueries({ queryKey: ['entries', leaderboardId] });
+            queryClient.invalidateQueries({ queryKey: ['castle-entries', leaderboardId] });
         }
     })
 

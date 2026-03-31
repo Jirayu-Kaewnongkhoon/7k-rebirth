@@ -37,14 +37,14 @@ function CastleEntry() {
         isLoading: leaderboardLoading,
         isError: leaderboardError
     } = useQuery<ICastleLeaderBoard>({
-        queryKey: ['leaderboard', date],
+        queryKey: ['castle-leaderboard', date],
         queryFn: () => getLeaderboard(date!),
     });
 
     const entryMutation = useMutation({
         mutationFn: createEntriesJson,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['entries', leaderboard?.id] });
+            queryClient.invalidateQueries({ queryKey: ['castle-entries', leaderboard?.id] });
             setFile(null);
         }
     });
@@ -52,7 +52,7 @@ function CastleEntry() {
     const leaderboardMutation = useMutation({
         mutationFn: createLeaderboard,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['leaderboard', date] });
+            queryClient.invalidateQueries({ queryKey: ['castle-leaderboard', date] });
         }
     });
 
@@ -67,7 +67,6 @@ function CastleEntry() {
             try {
                 const content = e.target?.result as string;
                 const jsonData = JSON.parse(content);
-                console.log(jsonData);
                 setPreviewFile(jsonData);
                 event.target!.value = ''; // Reset the input
             } catch (error) {
@@ -203,7 +202,7 @@ function Entries({ id }: { id: number }) {
         isLoading: entriesLoading,
         isError: entriesError
     } = useQuery<ICastleEntry[]>({
-        queryKey: ['entries', id],
+        queryKey: ['castle-entries', id],
         queryFn: () => getEntries(id!.toString()),
         enabled: !!id
     });

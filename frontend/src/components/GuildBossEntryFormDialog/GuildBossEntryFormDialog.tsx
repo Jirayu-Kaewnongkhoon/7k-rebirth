@@ -8,17 +8,16 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from "@mui/material/Divider";
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-import type { IPlayer } from "../../types/player";
 import type { IGuildBoss, IGuildBossEntry } from "../../types/guildBoss";
+import type { IPlayer } from "../../types/player";
 
+import { createEntries } from "../../services/guildBossEntryService";
 import { getPlayers } from "../../services/playerService";
-import { createEntries, getEntries } from "../../services/guildBossEntryService";
-import { getGuildBoss } from "../../services/guildBossService";
-import { Divider } from "@mui/material";
 
 interface EntryInput {
     playerId: number | null
@@ -27,9 +26,13 @@ interface EntryInput {
 }
 
 export default function GuildBossEntryFormDialog({
-    seasonId
+    seasonId,
+    boss,
+    scoreList
 }: {
     seasonId: number
+    boss: IGuildBoss
+    scoreList: IGuildBossEntry[]
 }) {
 
     const queryClient = useQueryClient();
@@ -38,16 +41,7 @@ export default function GuildBossEntryFormDialog({
         queryKey: ['players'],
         queryFn: getPlayers
     });
-    const { data: bossOptions } = useQuery<IGuildBoss[]>({
-        queryKey: ['guild-boss'],
-        queryFn: getGuildBoss
-    });
-    const { data: scoreList } = useQuery<IGuildBossEntry[]>({
-        queryKey: ['guild-boss-entries', seasonId],
-        queryFn: () => getEntries(seasonId, 2), //TODO: test data
-    });
 
-    const [boss, setBoss] = useState<number | null>(null);
     const [entries, setEntries] = useState<EntryInput[]>([
         { playerId: null, score: 0, hits: 0 }
     ]);
@@ -60,21 +54,12 @@ export default function GuildBossEntryFormDialog({
             ...scoreList?.map(score => score.player.id) || []
         ]
     )];
-    // const selectedBossIds = [...new Set(
-    //     [
-    //         ...entries
-    //             .map(e => e.bossId)
-    //             .filter((id): id is number => id !== null),
-    //         ...scoreList?.map(score => score.boss.id) || []
-    //     ]
-    // )];
 
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => {
         setOpen(false);
-        setBoss(null);
         setEntries([{ playerId: null, score: 0, hits: 0 }]);
     };
 
@@ -103,7 +88,7 @@ export default function GuildBossEntryFormDialog({
     const handleSubmit = () => {
         const data = {
             seasonId,
-            bossId: boss!,
+            bossId: boss.id,
             entries: entries
                 .filter(e => e.playerId !== null) // กรองเฉพาะ entry ที่มี playerId ไม่เป็น null
                 .map(e => ({
@@ -112,7 +97,6 @@ export default function GuildBossEntryFormDialog({
                     hits: e.hits,
                 }))
         }
-        console.log(data);
         mutation.mutate(data);
     }
 
@@ -120,7 +104,7 @@ export default function GuildBossEntryFormDialog({
         mutationFn: createEntries,
         onSuccess: () => {
             handleClose();
-            queryClient.invalidateQueries({ queryKey: ['guild-boss-entries', seasonId] });
+            queryClient.invalidateQueries({ queryKey: ['guild-boss-entries', { seasonId, bossId: boss.id }] });
         }
     })
 
@@ -140,20 +124,8 @@ export default function GuildBossEntryFormDialog({
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>อันดับคะแนน</DialogTitle>
+                <DialogTitle>อันดับคะแนน : บอส{boss.name}</DialogTitle>
                 <DialogContent>
-                    <Autocomplete
-                        options={bossOptions || []}
-                        getOptionLabel={(option) => option.name}
-                        value={bossOptions?.find(b => b.id === boss) || null}
-                        onChange={(_, newValue) => {
-                            setBoss(newValue?.id ?? null);
-                        }}
-                        renderInput={(params) => (
-                            <TextField {...params} placeholder="บอส" />
-                        )}
-                        sx={{ width: 250 }}
-                    />
                     <Divider sx={{ marginBlock: 1 }} />
                     <Stack spacing={2}>
                         {entries.map((entry, index) => (
@@ -169,13 +141,13 @@ export default function GuildBossEntryFormDialog({
                                         handleChange(index, "playerId", newValue?.id ?? null)
                                     }}
                                     renderInput={(params) => (
-                                        <TextField {...params} placeholder="ชื่อผู้เล่น" />
+                                        <TextField {...params} label="ชื่อผู้เล่น" />
                                     )}
                                     sx={{ width: 250 }}
                                 />
 
                                 <TextField
-                                    placeholder="คะแนน"
+                                    label="คะแนน"
                                     value={entry.score}
                                     onChange={(e) =>
                                         handleChange(index, "score", Number(e.target.value))
@@ -183,7 +155,7 @@ export default function GuildBossEntryFormDialog({
                                 />
 
                                 <TextField
-                                    placeholder="จำนวนรอบ"
+                                    label="จำนวนรอบ"
                                     value={entry.hits}
                                     onChange={(e) =>
                                         handleChange(index, "hits", Number(e.target.value))

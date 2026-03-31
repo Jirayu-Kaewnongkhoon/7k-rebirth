@@ -6,17 +6,16 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 
 import { createGuildBossSeason } from "../../services/guildBossService";
 
-function GuildBossSeasonFormDialog() {
+function GuildBossSeasonFormDialog({ page }: { page: number }) {
     const queryClient = useQueryClient();
 
     const [startDate, setStartDate] = useState<string>('');
     const [open, setOpen] = useState(false);
 
-
     const mutation = useMutation({
         mutationFn: createGuildBossSeason,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['guildBossSeason'] });
+            queryClient.invalidateQueries({ queryKey: ['guild-boss-seasons', { page }] });
             handleClose();
         }
     });
