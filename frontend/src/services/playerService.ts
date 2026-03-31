@@ -1,7 +1,9 @@
 import type { IPlayer, IPlayerWithStats } from "../types/player";
 
+import { BASE_URL } from "../constants/api";
+
 const createPlayer = async (playerName: string) => {
-    const response = await fetch('http://localhost:3300/player', {
+    const response = await fetch(`${BASE_URL}/player`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: playerName }),
@@ -14,7 +16,7 @@ const createPlayer = async (playerName: string) => {
 }
 
 const deletePlayer = async (id: number) => {
-    const response = await fetch(`http://localhost:3300/player/${id}`, {
+    const response = await fetch(`${BASE_URL}/player/${id}`, {
         method: "DELETE",
     })
     if (!response.ok) {
@@ -25,7 +27,7 @@ const deletePlayer = async (id: number) => {
 }
 
 const getPlayer = async (playerId: number): Promise<IPlayerWithStats> => {
-    const response = await fetch(`http://localhost:3300/player/${playerId}`);
+    const response = await fetch(`${BASE_URL}/player/${playerId}`);
     if (!response.ok) {
         throw new Error('player fetch failed');
     }
@@ -34,7 +36,7 @@ const getPlayer = async (playerId: number): Promise<IPlayerWithStats> => {
 }
 
 const getPlayers = async (): Promise<IPlayer[]> => {
-    const response = await fetch('http://localhost:3300/player');
+    const response = await fetch(`${BASE_URL}/player`);
     if (!response.ok) {
         throw new Error('players fetch failed');
     }

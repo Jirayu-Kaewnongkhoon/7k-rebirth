@@ -1,6 +1,7 @@
+import { BASE_URL } from "../constants/api";
 
 const getPlayerBossStat = async (playerId: number) => {
-    const response = await fetch(`http://localhost:3300/playerBossStat/${playerId}`);
+    const response = await fetch(`${BASE_URL}/playerBossStat/${playerId}`);
     if (!response.ok) {
         throw new Error('player stat fetch failed');
     }

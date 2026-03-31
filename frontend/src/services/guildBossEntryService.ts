@@ -1,3 +1,5 @@
+import { BASE_URL } from "../constants/api";
+
 interface EntryData {
     seasonId: number;
     bossId: number;
@@ -9,7 +11,7 @@ interface EntryData {
 }
 
 const createEntries = async (entryData: EntryData) => {
-    const response = await fetch('http://localhost:3300/guildBossEntry', {
+    const response = await fetch(`${BASE_URL}/guildBossEntry`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -24,7 +26,7 @@ const createEntries = async (entryData: EntryData) => {
 }
 
 const createEntriesJson = async (formData: FormData) => {
-    const response = await fetch('http://localhost:3300/guildBossEntry/json', {
+    const response = await fetch(`${BASE_URL}/guildBossEntry/json`, {
         method: 'POST',
         body: formData,
     });
@@ -36,7 +38,7 @@ const createEntriesJson = async (formData: FormData) => {
 }
 
 const getEntries = async (seasonId: number, bossId: number) => {
-    const response = await fetch(`http://localhost:3300/guildBossEntry?seasonId=${seasonId}&bossId=${bossId}`);
+    const response = await fetch(`${BASE_URL}/guildBossEntry?seasonId=${seasonId}&bossId=${bossId}`);
     if (!response.ok) {
         throw new Error('entry fetch failed');
     }

@@ -1,5 +1,7 @@
+import { BASE_URL } from "../constants/api";
+
 const createGuildBossSeason = async (startDate: string) => {
-    const response = await fetch('http://localhost:3300/guildBossSeason', {
+    const response = await fetch(`${BASE_URL}/guildBossSeason`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ startDate }),
@@ -12,7 +14,7 @@ const createGuildBossSeason = async (startDate: string) => {
 }
 
 const getSeasons = async (page: number, limit: number) => {
-    const response = await fetch(`http://localhost:3300/guildBossSeason?page=${page}&limit=${limit}`);
+    const response = await fetch(`${BASE_URL}/guildBossSeason?page=${page}&limit=${limit}`);
     if (!response.ok) {
         throw new Error('seasons fetch failed');
     }
@@ -21,7 +23,7 @@ const getSeasons = async (page: number, limit: number) => {
 }
 
 const getSeason = async (seasonId: number) => {
-    const response = await fetch(`http://localhost:3300/guildBossSeason/${seasonId}`);
+    const response = await fetch(`${BASE_URL}/guildBossSeason/${seasonId}`);
     if (!response.ok) {
         throw new Error('seasons fetch failed');
     }
@@ -30,7 +32,7 @@ const getSeason = async (seasonId: number) => {
 }
 
 const getGuildBoss = async () => {
-    const response = await fetch('http://localhost:3300/guildBoss');
+    const response = await fetch(`${BASE_URL}/guildBoss`);
     if (!response.ok) {
         throw new Error('boss fetch failed');
     }

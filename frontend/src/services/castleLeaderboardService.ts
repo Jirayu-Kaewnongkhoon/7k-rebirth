@@ -1,5 +1,7 @@
+import { BASE_URL } from "../constants/api";
+
 const createLeaderboard = async (date: string) => {
-    const response = await fetch("http://localhost:3300/castleLeaderboard", {
+    const response = await fetch(`${BASE_URL}/castleLeaderboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date }),
@@ -12,7 +14,7 @@ const createLeaderboard = async (date: string) => {
 }
 
 const deleteLeaderboard = async (id: number) => {
-    const response = await fetch(`http://localhost:3300/castleLeaderboard/${id}`, {
+    const response = await fetch(`${BASE_URL}/castleLeaderboard/${id}`, {
         method: "DELETE",
     })
     if (!response.ok) {
@@ -23,7 +25,7 @@ const deleteLeaderboard = async (id: number) => {
 }
 
 const getLeaderboard = async (date: string) => {
-    const response = await fetch(`http://localhost:3300/castleLeaderboard/${date}`);
+    const response = await fetch(`${BASE_URL}/castleLeaderboard/${date}`);
     if (!response.ok) {
         throw new Error('leaderboard fetch failed');
     }
