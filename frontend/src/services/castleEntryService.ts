@@ -1,3 +1,5 @@
+import { BASE_URL } from "../constants/api";
+
 interface EntryData {
     leaderboardId: number;
     entries: {
@@ -7,7 +9,7 @@ interface EntryData {
 }
 
 const createEntries = async (entryData: EntryData) => {
-    const response = await fetch('http://localhost:3300/castleEntry', {
+    const response = await fetch(`${BASE_URL}/castleEntry`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -22,7 +24,7 @@ const createEntries = async (entryData: EntryData) => {
 }
 
 const createEntriesJson = async (formData: FormData) => {
-    const response = await fetch('http://localhost:3300/castleEntry/json', {
+    const response = await fetch(`${BASE_URL}/castleEntry/json`, {
         method: 'POST',
         body: formData,
     });
@@ -34,7 +36,7 @@ const createEntriesJson = async (formData: FormData) => {
 }
 
 const getEntries = async (leaderboardId: string) => {
-    const response = await fetch(`http://localhost:3300/castleEntry/${leaderboardId}`);
+    const response = await fetch(`${BASE_URL}/castleEntry/${leaderboardId}`);
     if (!response.ok) {
         throw new Error('entry fetch failed');
     }
