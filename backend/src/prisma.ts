@@ -2,7 +2,7 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, STATE } from "./generated/prisma/client";
 
-const connectionString = `${process.env.POSTGRES_URL}`;
+const connectionString = `${process.env.POSTGRES_URL_NON_POOLING}`;
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });

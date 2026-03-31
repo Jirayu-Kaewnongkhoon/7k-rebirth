@@ -11,6 +11,6 @@ export default defineConfig({
     seed: "ts-node prisma/seed.ts",
   },
   datasource: {
-    url: env("POSTGRES_URL"),
+    url: env("POSTGRES_URL_NON_POOLING"),
   },
 });
