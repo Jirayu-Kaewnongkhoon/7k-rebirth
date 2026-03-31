@@ -1,15 +1,16 @@
-import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useParams } from "react-router";
+
+import { ExpandLess, ExpandMore, Person } from "@mui/icons-material";
+import { Avatar, Box, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
 
 import GuildBossEntryFormDialog from "../../components/GuildBossEntryFormDialog/GuildBossEntryFormDialog";
 
 import type { IGuildBoss, IGuildBossEntry } from "../../types/guildBoss";
 
-import { getGuildBoss, getSeason } from "../../services/guildBossService";
 import { getEntries } from "../../services/guildBossEntryService";
-import { Avatar, Box, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
-import { ExpandLess, ExpandMore, Person } from "@mui/icons-material";
-import { useState } from "react";
+import { getGuildBoss, getSeason } from "../../services/guildBossService";
 
 function GuildBossEntry() {
     const { id } = useParams();
@@ -77,7 +78,15 @@ function Entry({
     const handleClick = () => setOpen(!open);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <Skeleton
+                animation="wave"
+                variant="rounded"
+                width="60%"
+                height="30%"
+                sx={{ marginBlock: 2 }}
+            />
+        );
     }
 
     if (isError) {
