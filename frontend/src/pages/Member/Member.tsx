@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
-import { Avatar, Box, Button, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
-import { Person } from "@mui/icons-material";
+import { Delete, Person } from "@mui/icons-material";
+import { Avatar, Box, Grid, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
 
 import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
 
@@ -58,13 +58,18 @@ function Member() {
                 >
                     <List>
                         {players?.map((player) => (
-                            <ListItem
+                            <ListItemButton
                                 key={player.id}
                                 sx={{
+                                    borderRadius: 1,
                                     '&:nth-of-type(even)': {
                                         backgroundColor: '#9e9e9e22'
+                                    },
+                                    "&:hover": {
+                                        backgroundColor: "rgba(146, 188, 255, 0.1)",
                                     }
                                 }}
+                                onClick={() => navigate(`/member/${player.id}`)}
                             >
                                 <ListItemAvatar>
                                     <Avatar>
@@ -75,34 +80,17 @@ function Member() {
                                     primary={player.name}
                                     secondary={!player.isActive && 'Inactive'}
                                 />
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        gap: '10px',
-                                        justifyContent: 'space-around'
-                                    }}
+
+                                <IconButton
+                                    disabled={!player.isActive}
+                                    loading={mutation.isPending && mutation.variables === player.id}
+                                    size="small"
+                                    color="error"
+                                    onClick={() => mutation.mutate(player.id)}
                                 >
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => navigate(`/member/${player.id}`)}
-                                    >
-                                        View
-                                    </Button>
-                                    <Button
-                                        disabled={!player.isActive}
-                                        loading={mutation.isPending && mutation.variables === player.id}
-                                        loadingPosition="start"
-                                        size="small"
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => mutation.mutate(player.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </Box>
-                            </ListItem>
+                                    <Delete />
+                                </IconButton>
+                            </ListItemButton>
                         ))}
                     </List>
                 </Grid>
