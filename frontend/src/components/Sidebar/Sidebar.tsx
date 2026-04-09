@@ -76,7 +76,10 @@ function Sidebar2(props: Props) {
                         to={sidebar.to}
                         icon={sidebar.icon}
                         label={sidebar.label}
-                        onClick={handleDrawerToggle}
+                        onClick={() => {
+                            setIsClosing(false);
+                            setMobileOpen(false);
+                        }}
                     />
                 ))}
             </List>
