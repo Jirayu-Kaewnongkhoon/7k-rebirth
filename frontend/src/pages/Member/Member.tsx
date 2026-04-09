@@ -27,6 +27,8 @@ function Member() {
         },
     });
 
+    const totalPlayers = players?.filter(player => player.isActive).length || 0;
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -44,7 +46,7 @@ function Member() {
                     alignItems: 'center'
                 }}
             >
-                <Typography variant="h5" noWrap>รายชื่อสมาชิก</Typography>
+                <Typography variant="h5" noWrap>รายชื่อสมาชิก ({totalPlayers} คน)</Typography>
                 <PlayerFormDialog />
             </Box>
             <Grid container spacing={2}>
@@ -69,7 +71,10 @@ function Member() {
                                         <Person />
                                     </Avatar>
                                 </ListItemAvatar>
-                                <ListItemText primary={player.name} />
+                                <ListItemText
+                                    primary={player.name}
+                                    secondary={!player.isActive && 'Inactive'}
+                                />
                                 <Box
                                     sx={{
                                         display: 'flex',
@@ -86,6 +91,9 @@ function Member() {
                                         View
                                     </Button>
                                     <Button
+                                        disabled={!player.isActive}
+                                        loading={mutation.isPending && mutation.variables === player.id}
+                                        loadingPosition="start"
                                         size="small"
                                         variant="contained"
                                         color="error"
