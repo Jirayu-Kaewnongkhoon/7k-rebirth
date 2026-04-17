@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
-import { Avatar, Box, Button, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
-import { Person } from "@mui/icons-material";
+import { Delete, FindInPage, Person } from "@mui/icons-material";
+import { Avatar, Box, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 
 import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
 
@@ -27,6 +27,8 @@ function Member() {
         },
     });
 
+    const totalPlayers = players?.filter(player => player.isActive).length || 0;
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -44,7 +46,7 @@ function Member() {
                     alignItems: 'center'
                 }}
             >
-                <Typography variant="h5" noWrap>รายชื่อสมาชิก</Typography>
+                <Typography variant="h5" noWrap>รายชื่อสมาชิก ({totalPlayers} คน)</Typography>
                 <PlayerFormDialog />
             </Box>
             <Grid container spacing={2}>
@@ -59,9 +61,10 @@ function Member() {
                             <ListItem
                                 key={player.id}
                                 sx={{
+                                    borderRadius: 1,
                                     '&:nth-of-type(even)': {
                                         backgroundColor: '#9e9e9e22'
-                                    }
+                                    },
                                 }}
                             >
                                 <ListItemAvatar>
@@ -69,31 +72,27 @@ function Member() {
                                         <Person />
                                     </Avatar>
                                 </ListItemAvatar>
-                                <ListItemText primary={player.name} />
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        gap: '10px',
-                                        justifyContent: 'space-around'
-                                    }}
+                                <ListItemText
+                                    primary={player.name}
+                                    secondary={!player.isActive && 'Inactive'}
+                                />
+
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => navigate(`/member/${player.id}`)}
                                 >
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => navigate(`/member/${player.id}`)}
-                                    >
-                                        View
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => mutation.mutate(player.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </Box>
+                                    <FindInPage />
+                                </IconButton>
+                                <IconButton
+                                    disabled={!player.isActive}
+                                    loading={mutation.isPending && mutation.variables === player.id}
+                                    size="small"
+                                    color="error"
+                                    onClick={() => mutation.mutate(player.id)}
+                                >
+                                    <Delete />
+                                </IconButton>
                             </ListItem>
                         ))}
                     </List>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router'
+import { useParams } from 'react-router';
 
-import { Avatar, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { Divider, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { getPlayer } from '../../services/playerService';
 
@@ -13,6 +13,15 @@ function PlayerView() {
         queryKey: ['player', playerId],
         queryFn: () => getPlayer(Number(playerId)!)
     });
+
+    const formatScore = (score: number) => {
+        if (score >= 1_000_000) {
+            return `${(score / 1_000_000).toFixed(2)}M`;
+        } else if (score >= 1_000) {
+            return `${(score / 1_000).toFixed(2)}K`;
+        }
+        return score.toString();
+    };
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -30,12 +39,19 @@ function PlayerView() {
         <>
             <h2>{player?.name}</h2>
             <Divider />
-            <h3>Stats</h3>
+            <Typography variant="h5" noWrap marginBlock={2}>
+                สงครามชิงปราสาท
+            </Typography>
             <Grid container spacing={2}>
                 <Grid
                     size={{
                         xs: 12,
                         md: 8,
+                    }}
+                    sx={{
+                        borderRadius: 2,
+                        padding: 2,
+                        boxShadow: 'var(--box-shadow)',
                     }}
                 >
                     <List>
@@ -43,25 +59,30 @@ function PlayerView() {
                             <ListItem
                                 key={stat.id}
                                 sx={{
+                                    borderRadius: 1,
                                     '&:nth-of-type(even)': {
                                         backgroundColor: '#9e9e9e22'
                                     }
                                 }}
                             >
-                                <ListItemAvatar>
-                                    <Avatar sizes="small">
-                                        <pre>{stat.boss.name}</pre>
-                                    </Avatar>
-                                </ListItemAvatar>
                                 <ListItemText
-                                    primary={`Last Score: ${stat.lastScore}`}
-                                    secondary={`Max Score: ${stat.maxScore}`}
+                                    primary={stat.boss.name}
+                                    slotProps={{
+                                        primary: {
+                                            fontWeight: 'bold'
+                                        }
+                                    }}
+                                />
+                                <ListItemText
+                                    primary={`คะแนนล่าสุด: ${formatScore(stat.lastScore)}`}
+                                    secondary={`คะแนนสูงสุด: ${formatScore(stat.maxScore)}`}
+                                    sx={{ textAlign: 'right' }}
                                 />
                             </ListItem>
                         ))}
                     </List>
                 </Grid>
-            </Grid>
+            </Grid >
         </>
     )
 }

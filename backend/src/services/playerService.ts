@@ -42,7 +42,10 @@ const getPlayer = async (id: number) => {
 
 const getPlayers = async () => {
     const players = await prisma.player.findMany({
-        where: { isActive: true }
+        orderBy: [
+            { isActive: "desc" },  // true มาก่อน false
+            { id: "asc" }
+        ]
     });
     return players;
 }
