@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
-import { Delete, Person } from "@mui/icons-material";
-import { Avatar, Box, Grid, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Delete, FindInPage, Person } from "@mui/icons-material";
+import { Avatar, Box, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 
 import PlayerFormDialog from "../../components/PlayerFormDialog/PlayerFormDialog";
 
@@ -58,18 +58,14 @@ function Member() {
                 >
                     <List>
                         {players?.map((player) => (
-                            <ListItemButton
+                            <ListItem
                                 key={player.id}
                                 sx={{
                                     borderRadius: 1,
                                     '&:nth-of-type(even)': {
                                         backgroundColor: '#9e9e9e22'
                                     },
-                                    "&:hover": {
-                                        backgroundColor: "rgba(146, 188, 255, 0.1)",
-                                    }
                                 }}
-                                onClick={() => navigate(`/member/${player.id}`)}
                             >
                                 <ListItemAvatar>
                                     <Avatar>
@@ -82,6 +78,13 @@ function Member() {
                                 />
 
                                 <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => navigate(`/member/${player.id}`)}
+                                >
+                                    <FindInPage />
+                                </IconButton>
+                                <IconButton
                                     disabled={!player.isActive}
                                     loading={mutation.isPending && mutation.variables === player.id}
                                     size="small"
@@ -90,7 +93,7 @@ function Member() {
                                 >
                                     <Delete />
                                 </IconButton>
-                            </ListItemButton>
+                            </ListItem>
                         ))}
                     </List>
                 </Grid>
