@@ -8,7 +8,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from "@mui/material/Divider";
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -124,10 +123,9 @@ export default function GuildBossEntryFormDialog({
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>อันดับคะแนน : บอส{boss.name}</DialogTitle>
+                <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน : บอส{boss.name}</DialogTitle>
                 <DialogContent>
-                    <Divider sx={{ marginBlock: 1 }} />
-                    <Stack spacing={2}>
+                    <Stack spacing={2} paddingTop={2}>
                         {entries.map((entry, index) => (
                             <Stack direction="row" spacing={2} key={index}>
                                 <Autocomplete

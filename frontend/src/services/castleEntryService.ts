@@ -35,7 +35,16 @@ const createEntriesJson = async (formData: FormData) => {
     return data.data;
 }
 
-const getEntries = async (leaderboardId: string) => {
+const downloadJsonTemplate = async (leaderboardId: number) => {
+    const response = await fetch(`${BASE_URL}/castleEntry/json/${leaderboardId}`);
+    if (!response.ok) {
+        throw new Error('Upload failed');
+    }
+    const blob = await response.blob();
+    return blob;
+}
+
+const getEntries = async (leaderboardId: number) => {
     const response = await fetch(`${BASE_URL}/castleEntry/${leaderboardId}`);
     if (!response.ok) {
         throw new Error('entry fetch failed');
@@ -47,5 +56,6 @@ const getEntries = async (leaderboardId: string) => {
 export {
     createEntries,
     createEntriesJson,
+    downloadJsonTemplate,
     getEntries,
 };

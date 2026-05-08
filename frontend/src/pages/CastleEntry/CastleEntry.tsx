@@ -10,7 +10,7 @@ import CastleEntryFormDialog from "../../components/CastleEntryFormDialog/Castle
 
 import type { ICastleEntry, ICastleLeaderBoard } from "../../types/castle";
 
-import { createEntriesJson, getEntries } from "../../services/castleEntryService";
+import { createEntriesJson, downloadJsonTemplate, getEntries } from "../../services/castleEntryService";
 import { createLeaderboard, getLeaderboard } from "../../services/castleLeaderboardService";
 
 const VisuallyHiddenInput = styled('input')({
@@ -82,8 +82,20 @@ function CastleEntry() {
         entryMutation.mutate(formData);
     }
 
-    const handleDownloadTemplate = () => {
-        // TODO: load template with leaderboardId
+    const handleDownloadTemplate = async () => {
+        try {
+            const blob = await downloadJsonTemplate(leaderboard?.id!);
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "template.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading template:', error);
+        }
     }
 
     if (leaderboardLoading) {
@@ -120,17 +132,14 @@ function CastleEntry() {
                 }}
             >
                 <Box>
-                    <Typography variant="h4" noWrap>
-                        Date : {
+                    <Typography variant="h4" noWrap overflow={'visible'}>
+                        {leaderboard?.boss.name} : {
                             new Intl.DateTimeFormat("th-TH", {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                             }).format(new Date(leaderboard?.date!))
                         }
-                    </Typography>
-                    <Typography variant="h4" noWrap>
-                        Boss : {leaderboard?.boss.name}
                     </Typography>
                 </Box>
                 <Box
@@ -203,7 +212,7 @@ function Entries({ id }: { id: number }) {
         isError: entriesError
     } = useQuery<ICastleEntry[]>({
         queryKey: ['castle-entries', id],
-        queryFn: () => getEntries(id!.toString()),
+        queryFn: () => getEntries(id!),
         enabled: !!id
     });
 

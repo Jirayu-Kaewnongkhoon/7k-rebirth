@@ -37,7 +37,7 @@ export default function CastleEntryFormDialog({
     });
     const { data: scoreList } = useQuery<ICastleEntry[]>({
         queryKey: ['castle-entries', leaderboardId],
-        queryFn: () => getEntries(leaderboardId.toString()),
+        queryFn: () => getEntries(leaderboardId),
     });
 
     const [entries, setEntries] = useState<EntryInput[]>([
@@ -120,11 +120,11 @@ export default function CastleEntryFormDialog({
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>อันดับคะแนน</DialogTitle>
+                <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={2}>
+                    <Stack gap={1}>
                         {entries.map((entry, index) => (
-                            <Stack direction="row" spacing={2} key={index}>
+                            <Stack direction="row" gap={2} marginBlock={1} key={index}>
                                 <Autocomplete
                                     options={playerOptions?.filter(option => {
                                         const isSelected = selectedPlayerIds.includes(option.id);
@@ -136,13 +136,13 @@ export default function CastleEntryFormDialog({
                                         handleChange(index, "playerId", newValue?.id ?? null)
                                     }}
                                     renderInput={(params) => (
-                                        <TextField {...params} placeholder="ชื่อผู้เล่น" />
+                                        <TextField {...params} label="ชื่อผู้เล่น" />
                                     )}
                                     sx={{ width: 250 }}
                                 />
 
                                 <TextField
-                                    placeholder="คะแนน"
+                                    label="คะแนน"
                                     value={entry.score}
                                     onChange={(e) =>
                                         handleChange(index, "score", Number(e.target.value))

@@ -77,6 +77,10 @@ function Entry({
 
     const handleClick = () => setOpen(!open);
 
+    const smartFixed = (num: number) => {
+        return Number.isInteger(num) ? num : parseFloat(num.toFixed(2));
+    };
+
     if (isLoading) {
         return (
             <Skeleton
@@ -135,7 +139,7 @@ function Entry({
                                         </ListItemAvatar>
                                         <ListItemText
                                             primary={entry.player.name}
-                                            secondary={`คะแนนต่อรอบ: ${entry.score / entry.hits}`}
+                                            secondary={`คะแนนต่อรอบ: ${smartFixed(entry.score / entry.hits)}`}
                                         />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: "flex-end" }}>
                                             <Typography>คะแนน: {entry.score}</Typography>
