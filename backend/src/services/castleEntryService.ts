@@ -117,8 +117,8 @@ const getJsonTemplate = async (leaderboardId: number) => {
 
     const template = {
         leaderboardId,
-        players: players.map((p) => ({
-            id: p.id,
+        entries: players.map((p) => ({
+            playerId: p.id,
             name: p.name,
             score: 0,
         })),

@@ -131,7 +131,8 @@ export default function GuildBossEntryFormDialog({
                                 <Autocomplete
                                     options={playerOptions?.filter(option => {
                                         const isSelected = selectedPlayerIds.includes(option.id);
-                                        return !isSelected;
+                                        const isActive = option.isActive;
+                                        return !isSelected && isActive;
                                     }) || []}
                                     getOptionLabel={(option) => option.name}
                                     value={playerOptions?.find(p => p.id === entry.playerId) || null}
