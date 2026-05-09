@@ -116,7 +116,7 @@ function Entry({
                             <ListItemText primary={`บอส${boss.name}`} />
                             {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                        <GuildBossEntryFormDialog seasonId={seasonId} boss={boss} scoreList={entries || []} />
+                        <GuildBossEntryFormDialog seasonId={seasonId} boss={boss} scoreList={entries ?? []} />
                     </Box>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         {entries?.length == 0 ? (

@@ -27,7 +27,7 @@ function Member() {
         },
     });
 
-    const totalPlayers = players?.filter(player => player.isActive).length || 0;
+    const totalPlayers = players?.filter(player => player.isActive).length ?? 0;
 
     if (isLoading) {
         return <div>Loading...</div>;

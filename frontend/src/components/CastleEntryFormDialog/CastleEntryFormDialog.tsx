@@ -49,7 +49,7 @@ export default function CastleEntryFormDialog({
             ...entries
                 .map(e => e.playerId)
                 .filter((id): id is number => id !== null),
-            ...scoreList?.map(score => score.player.id) || []
+            ...(scoreList?.map(score => score.player.id) ?? [])
         ]
     )];
 
@@ -130,9 +130,9 @@ export default function CastleEntryFormDialog({
                                         const isSelected = selectedPlayerIds.includes(option.id);
                                         const isActive = option.isActive;
                                         return !isSelected && isActive;
-                                    }) || []}
+                                    }) ?? []}
                                     getOptionLabel={(option) => option.name}
-                                    value={playerOptions?.find(p => p.id === entry.playerId) || null}
+                                    value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
                                     onChange={(_, newValue) => {
                                         handleChange(index, "playerId", newValue?.id ?? null)
                                     }}

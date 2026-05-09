@@ -31,7 +31,7 @@ function PlayerView() {
         return <div>Error loading player.</div>;
     }
 
-    if (!player || !player?.isActive) {
+    if (!player || !player.isActive) {
         return <>player not found</>
     }
 
