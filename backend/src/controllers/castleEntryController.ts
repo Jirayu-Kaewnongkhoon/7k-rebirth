@@ -25,20 +25,6 @@ const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextF
     }
 }
 
-const createEntriesJson = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
-    try {
-        if (!req.file) throw new Error('No file uploaded');
-
-        const data = JSON.parse(req.file.buffer.toString());
-
-        await castleEntryService.createEntries(data);
-        res.status(201).json({ success: true, message: 'Entries created successfully' });
-
-    } catch (error) {
-        next(error);
-    }
-}
-
 const downloadTemplateSchema = z.object({
     leaderboardId: z.coerce.number()
 });
@@ -56,4 +42,4 @@ const downloadJsonTemplate = async (req: Request, res: Response, next: NextFunct
     }
 }
 
-export { createEntries, getEntries, createEntriesJson, downloadJsonTemplate };
+export { createEntries, getEntries, downloadJsonTemplate };

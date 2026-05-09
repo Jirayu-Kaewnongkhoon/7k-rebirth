@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { Delete, Save } from "@mui/icons-material";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -18,16 +18,19 @@ import type { IPlayer } from "../../types/player";
 import { getPlayers } from "../../services/playerService";
 import { createEntries, getEntries } from "../../services/castleEntryService";
 
-interface EntryInput {
+export interface EntryInput {
     playerId: number | null
     score: number
 }
 
-export default function CastleEntryFormDialog({
-    leaderboardId
-}: {
-    leaderboardId: number
-}) {
+export interface CastleEntryFormDialogHandle {
+    openWithEntries: (entries: EntryInput[]) => void;
+}
+
+function CastleEntryFormDialog(
+    { leaderboardId }: { leaderboardId: number },
+    ref: React.Ref<CastleEntryFormDialogHandle>
+) {
 
     const queryClient = useQueryClient();
 
@@ -54,6 +57,13 @@ export default function CastleEntryFormDialog({
     )];
 
     const [open, setOpen] = useState(false);
+
+    useImperativeHandle(ref, () => ({
+        openWithEntries: (data: EntryInput[]) => {
+            setEntries(data.filter(e => e.score > 0));
+            setOpen(true);
+        }
+    }));
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => {
@@ -182,3 +192,5 @@ export default function CastleEntryFormDialog({
         </>
     )
 }
+
+export default forwardRef(CastleEntryFormDialog);
