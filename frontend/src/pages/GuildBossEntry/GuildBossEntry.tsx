@@ -3,14 +3,16 @@ import { useState } from "react";
 import { useParams } from "react-router";
 
 import { ExpandLess, ExpandMore, Person } from "@mui/icons-material";
-import { Avatar, Box, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
+import { Avatar, Box, Collapse, Divider, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
 
 import GuildBossEntryFormDialog from "../../components/GuildBossEntryFormDialog/GuildBossEntryFormDialog";
 
-import type { IGuildBoss, IGuildBossEntry } from "../../types/guildBoss";
+import type { IGuildBoss, IGuildBossEntry, IGuildBossSeason } from "../../types/guildBoss";
 
 import { getEntries } from "../../services/guildBossEntryService";
 import { getGuildBoss, getSeason } from "../../services/guildBossService";
+
+import { dateFormat } from "../../utils/date";
 
 function GuildBossEntry() {
     const { id } = useParams();
@@ -21,7 +23,7 @@ function GuildBossEntry() {
         data: season,
         isLoading,
         isError
-    } = useQuery<IGuildBossEntry>({
+    } = useQuery<IGuildBossSeason>({
         queryKey: ['guild-boss-season', parseInt(id)],
         queryFn: () => getSeason(parseInt(id)),
     });
@@ -49,8 +51,10 @@ function GuildBossEntry() {
 
     return (
         <>
-            <div>GuildBossEntry: {id}</div>
-
+            <Typography variant="h4" component="h1" gutterBottom>
+                วันที่: {dateFormat(season.startDate)} - {dateFormat(season.endDate)}
+            </Typography>
+            <Divider />
             {boss.map(b => (
                 <Entry key={b.id} seasonId={parseInt(id)} boss={b} />
             ))}
@@ -78,7 +82,7 @@ function Entry({
     const handleClick = () => setOpen(!open);
 
     const smartFixed = (num: number) => {
-        return Number.isInteger(num) ? num : parseFloat(num.toFixed(2));
+        return Math.round(num).toLocaleString();
     };
 
     if (isLoading) {
@@ -86,9 +90,9 @@ function Entry({
             <Skeleton
                 animation="wave"
                 variant="rounded"
-                width="60%"
-                height="30%"
-                sx={{ marginBlock: 2 }}
+                width="65%"
+                height="48px"
+                sx={{ marginBlock: 1.8 }}
             />
         );
     }

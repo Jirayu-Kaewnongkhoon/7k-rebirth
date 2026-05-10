@@ -13,6 +13,8 @@ import type { ICastleEntry, ICastleLeaderBoard } from "../../types/castle";
 import { downloadJsonTemplate, getEntries } from "../../services/castleEntryService";
 import { createLeaderboard, getLeaderboard } from "../../services/castleLeaderboardService";
 
+import { dateFormat } from "../../utils/date";
+
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',
@@ -121,13 +123,7 @@ function CastleEntry() {
             >
                 <Box>
                     <Typography variant="h4" noWrap overflow={'visible'}>
-                        {leaderboard?.boss.name} : {
-                            new Intl.DateTimeFormat("th-TH", {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                            }).format(new Date(leaderboard?.date!))
-                        }
+                        {leaderboard?.boss.name} : {dateFormat(leaderboard?.date!)}
                     </Typography>
                 </Box>
                 <Box
