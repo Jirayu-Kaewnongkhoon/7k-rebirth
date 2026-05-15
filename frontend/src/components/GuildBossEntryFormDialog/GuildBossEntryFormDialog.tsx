@@ -75,6 +75,30 @@ export default function GuildBossEntryFormDialog({
         setEntries(updated);
     }
 
+    const handlePaste = (e: React.ClipboardEvent) => {
+        const text = e.clipboardData.getData('text');
+        const rows = text.trim().split('\n');
+
+        const parsed = rows
+            .map(row => row.split('\t'))           // แยกด้วย tab
+            .filter(cols => cols.length === 3)     // ต้องมีครบ 3 ช่อง
+            .map(cols => {
+                const playerName = cols[0].trim();
+                const player = playerOptions?.find(p => p.name === playerName);
+
+                return {
+                    playerId: player?.id ?? null,
+                    score: Number(cols[1].trim().replace(/,/g, '')),
+                    hits: Number(cols[2].trim()),
+                };
+            });
+
+        if (parsed.length > 0) {
+            e.preventDefault(); // ไม่ให้ paste ลง input ปกติ
+            setEntries(parsed);
+        }
+    }
+
     const handleAddRow = () => {
         setEntries([...entries, { playerId: null, score: 0, hits: 0 }])
     }
@@ -125,7 +149,7 @@ export default function GuildBossEntryFormDialog({
             >
                 <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน : บอส{boss.name}</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={2} paddingTop={2}>
+                    <Stack spacing={2} paddingTop={2} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
                             <Stack direction="row" spacing={2} key={index}>
                                 <Autocomplete

@@ -84,6 +84,29 @@ function CastleEntryFormDialog(
         setEntries(updated);
     }
 
+    const handlePaste = (e: React.ClipboardEvent) => {
+        const text = e.clipboardData.getData('text');
+        const rows = text.trim().split('\n');
+
+        const parsed = rows
+            .map(row => row.split('\t'))           // แยกด้วย tab
+            .filter(cols => cols.length === 2)     // ต้องมีครบ 2 ช่อง
+            .map(cols => {
+                const playerName = cols[0].trim();
+                const player = playerOptions?.find(p => p.name === playerName);
+
+                return {
+                    playerId: player?.id ?? null,
+                    score: Number(cols[1].trim().replace(/,/g, '')),
+                };
+            });
+
+        if (parsed.length > 0) {
+            e.preventDefault(); // ไม่ให้ paste ลง input ปกติ
+            setEntries(parsed);
+        }
+    }
+
     const handleAddRow = () => {
         setEntries([...entries, { playerId: null, score: 0 }])
     }
@@ -132,7 +155,7 @@ function CastleEntryFormDialog(
             >
                 <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน</DialogTitle>
                 <DialogContent>
-                    <Stack gap={1}>
+                    <Stack gap={1} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
                             <Stack direction="row" gap={2} marginBlock={1} key={index}>
                                 <Autocomplete
