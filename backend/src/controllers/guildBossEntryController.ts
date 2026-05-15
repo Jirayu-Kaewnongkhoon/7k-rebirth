@@ -29,18 +29,4 @@ const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextF
     }
 }
 
-const createEntriesJson = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
-    try {
-        if (!req.file) throw new Error('No file uploaded');
-
-        const data = JSON.parse(req.file.buffer.toString());
-
-        await guildBossEntryService.createEntries(data);
-        res.status(201).json({ success: true, message: 'Entries created successfully' });
-
-    } catch (error) {
-        next(error);
-    }
-}
-
-export { createEntries, getEntries, createEntriesJson };
+export { createEntries, getEntries };

@@ -1,12 +1,10 @@
 import { Router } from 'express';
 
-import { createEntries, getEntries, createEntriesJson } from '../controllers/guildBossEntryController';
-import { upload } from '../lib/fileUpload';
+import { createEntries, getEntries } from '../controllers/guildBossEntryController';
 
 const router = Router();
 
 router.get('/', getEntries);
 router.post('/', createEntries);
-router.post('/json', upload.single('file'), createEntriesJson);
 
 export default router;
