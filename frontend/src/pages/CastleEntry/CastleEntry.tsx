@@ -14,6 +14,7 @@ import { downloadJsonTemplate, getEntries } from "../../services/castleEntryServ
 import { createLeaderboard, getLeaderboard } from "../../services/castleLeaderboardService";
 
 import { dateFormat } from "../../utils/date";
+import { scoreFormat } from "../../utils/score";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -222,7 +223,7 @@ function Entries({ id }: { id: number }) {
                                     primary={entry.player.name}
                                     secondary={entry.state}
                                 />
-                                <Typography>{entry.score}</Typography>
+                                <Typography>{scoreFormat(entry.score)}</Typography>
                             </ListItem>
                         ))}
                     </List>

@@ -13,6 +13,7 @@ import { getEntries } from "../../services/guildBossEntryService";
 import { getGuildBoss, getSeason } from "../../services/guildBossService";
 
 import { dateFormat } from "../../utils/date";
+import { scoreFormat } from "../../utils/score";
 
 function GuildBossEntry() {
     const { id } = useParams();
@@ -81,10 +82,6 @@ function Entry({
 
     const handleClick = () => setOpen(!open);
 
-    const smartFixed = (num: number) => {
-        return Math.round(num).toLocaleString();
-    };
-
     if (isLoading) {
         return (
             <Skeleton
@@ -143,10 +140,10 @@ function Entry({
                                         </ListItemAvatar>
                                         <ListItemText
                                             primary={entry.player.name}
-                                            secondary={`คะแนนต่อรอบ: ${smartFixed(entry.score / entry.hits)}`}
+                                            secondary={`คะแนนต่อรอบ: ${scoreFormat(entry.score / entry.hits)}`}
                                         />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: "flex-end" }}>
-                                            <Typography>คะแนน: {entry.score}</Typography>
+                                            <Typography>คะแนน: {scoreFormat(entry.score)}</Typography>
                                             <Typography>รอบตี: {entry.hits}</Typography>
                                         </Box>
                                     </ListItem>
