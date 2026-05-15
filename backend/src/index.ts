@@ -2,10 +2,12 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { prisma } from "./prisma";
 
 // routes
+import authRoute from './routes/authRoute';
 import castleBossRoute from './routes/castleBossRoute';
 import castleEntryRoute from './routes/castleEntryRoute';
 import castleLeaderboardRoute from './routes/castleLeaderboardRoute';
@@ -20,12 +22,17 @@ import { globalErrorHandler } from './middlewares/globalErrorHanlder';
 const app = express();
 
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+app.use(cors({ 
+    credentials: true, 
+    origin: process.env.CORS_ORIGIN?.split(',') ?? [],
+}));
 app.use(morgan('dev'));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // apply routes
+app.use('/auth', authRoute);
 app.use('/castleLeaderboard', castleLeaderboardRoute);
 app.use('/castleEntry', castleEntryRoute);
 app.use('/player', playerRoute);

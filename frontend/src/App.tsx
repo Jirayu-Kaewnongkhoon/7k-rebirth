@@ -3,12 +3,16 @@ import './App.css'
 import { RouterProvider } from 'react-router'
 import { HelmetProvider } from 'react-helmet-async'
 
+import { AuthProvider } from './contexts/AuthContext'
+
 import { router } from './routes/appRoute'
 
 function App() {
   return (
     <HelmetProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </HelmetProvider>
   )
 }
