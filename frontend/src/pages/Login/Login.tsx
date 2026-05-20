@@ -42,12 +42,14 @@ export default function Login() {
                 sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300 }}
             >
                 <TextField
+                    required
                     label="ชื่อผู้ใช้"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoFocus
                 />
                 <TextField
+                    required
                     label="รหัสผ่าน"
                     type="password"
                     value={password}

@@ -119,6 +119,7 @@ function Sidebar2(props: Props) {
                     <IconButton
                         color="inherit"
                         edge="end"
+                        loading={logoutMutation.isPending}
                         onClick={() => logoutMutation.mutate()}
                     >
                         <Logout />

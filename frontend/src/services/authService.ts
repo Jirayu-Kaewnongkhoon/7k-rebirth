@@ -1,5 +1,7 @@
 import { BASE_URL } from "../constants/api";
 
+import { fetchClient } from "../lib/fetch";
+
 const fetchMe = async () => {
     const res = await fetch(`${BASE_URL}/auth/me`, { credentials: 'include' });
     if (!res.ok) return null;
@@ -7,21 +9,20 @@ const fetchMe = async () => {
 };
 
 const fetchLogin = async (username: string, password: string) => {
-    const res = await fetch(`${BASE_URL}/auth/login`, {
+    const data = await fetchClient(`auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
-    if (!res.ok) throw new Error('Login failed');
-    return res.json();
+    return data.data;
 };
 
 const fetchLogout = async () => {
-    await fetch(`${BASE_URL}/auth/logout`, {
+    const data = await fetchClient(`auth/logout`, {
         method: 'POST',
-        credentials: 'include'
     });
+    return data.data;
 };
 
 export {
