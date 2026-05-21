@@ -1,17 +1,20 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { useParams } from "react-router";
 
-import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
+import { CloudUpload, Person, SaveAlt } from "@mui/icons-material";
+import { Avatar, Box, Button, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { CloudUpload, Person, Save, SaveAlt } from "@mui/icons-material";
 
-import CastleEntryFormDialog from "../../components/CastleEntryFormDialog/CastleEntryFormDialog";
+import CastleEntryFormDialog, { type CastleEntryFormDialogHandle, type EntryInput } from "../../components/CastleEntryFormDialog/CastleEntryFormDialog";
 
 import type { ICastleEntry, ICastleLeaderBoard } from "../../types/castle";
 
-import { createEntriesJson, getEntries } from "../../services/castleEntryService";
+import { downloadJsonTemplate, getEntries } from "../../services/castleEntryService";
 import { createLeaderboard, getLeaderboard } from "../../services/castleLeaderboardService";
+
+import { dateFormat } from "../../utils/date";
+import { scoreFormat } from "../../utils/score";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -25,12 +28,16 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
+interface JsonData {
+    leaderboardId: number;
+    entries: EntryInput[];
+}
+
 function CastleEntry() {
     const { date } = useParams();
     const queryClient = useQueryClient();
 
-    const [file, setFile] = useState<File | null>(null);
-    const [previewFile, setPreviewFile] = useState(null);
+    const dialogRef = useRef<CastleEntryFormDialogHandle>(null);
 
     const {
         data: leaderboard,
@@ -39,14 +46,6 @@ function CastleEntry() {
     } = useQuery<ICastleLeaderBoard>({
         queryKey: ['castle-leaderboard', date],
         queryFn: () => getLeaderboard(date!),
-    });
-
-    const entryMutation = useMutation({
-        mutationFn: createEntriesJson,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['castle-entries', leaderboard?.id] });
-            setFile(null);
-        }
     });
 
     const leaderboardMutation = useMutation({
@@ -60,14 +59,12 @@ function CastleEntry() {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        setFile(file);
-
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const content = e.target?.result as string;
-                const jsonData = JSON.parse(content);
-                setPreviewFile(jsonData);
+                const jsonData = JSON.parse(content) as JsonData;
+                dialogRef.current?.openWithEntries(jsonData.entries);
                 event.target!.value = ''; // Reset the input
             } catch (error) {
                 console.error('Error parsing JSON:', error);
@@ -76,14 +73,20 @@ function CastleEntry() {
         reader.readAsText(file);
     }
 
-    const handleConfirmUpload = () => {
-        const formData = new FormData();
-        formData.append('file', file!);
-        entryMutation.mutate(formData);
-    }
+    const handleDownloadTemplate = async () => {
+        try {
+            const blob = await downloadJsonTemplate(leaderboard?.id!);
 
-    const handleDownloadTemplate = () => {
-        // TODO: load template with leaderboardId
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "template.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading template:', error);
+        }
     }
 
     if (leaderboardLoading) {
@@ -120,17 +123,8 @@ function CastleEntry() {
                 }}
             >
                 <Box>
-                    <Typography variant="h4" noWrap>
-                        Date : {
-                            new Intl.DateTimeFormat("th-TH", {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                            }).format(new Date(leaderboard?.date!))
-                        }
-                    </Typography>
-                    <Typography variant="h4" noWrap>
-                        Boss : {leaderboard?.boss.name}
+                    <Typography variant="h4" noWrap overflow={'visible'}>
+                        {leaderboard?.boss.name} : {dateFormat(leaderboard?.date!)}
                     </Typography>
                 </Box>
                 <Box
@@ -140,7 +134,10 @@ function CastleEntry() {
                         gap: 1
                     }}
                 >
-                    <CastleEntryFormDialog leaderboardId={leaderboard?.id!} />
+                    <CastleEntryFormDialog
+                        leaderboardId={leaderboard?.id!}
+                        ref={dialogRef}
+                    />
                     <Button
                         component="label"
                         size="small"
@@ -169,26 +166,6 @@ function CastleEntry() {
             <Divider />
 
             <Entries id={leaderboard?.id!} />
-
-            <Dialog
-                open={file !== null}
-                onClose={() => setFile(null)}
-            >
-                <DialogTitle>Preview Uploaded File</DialogTitle>
-                <DialogContent>
-                    <pre>{JSON.stringify(previewFile, null, 2)}</pre>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleConfirmUpload}
-                        loading={entryMutation.isPending}
-                        loadingPosition="start"
-                        startIcon={<Save />}
-                    >
-                        Confirm Upload
-                    </Button>
-                </DialogContent>
-            </Dialog>
         </>
     )
 }
@@ -203,7 +180,7 @@ function Entries({ id }: { id: number }) {
         isError: entriesError
     } = useQuery<ICastleEntry[]>({
         queryKey: ['castle-entries', id],
-        queryFn: () => getEntries(id!.toString()),
+        queryFn: () => getEntries(id!),
         enabled: !!id
     });
 
@@ -246,7 +223,7 @@ function Entries({ id }: { id: number }) {
                                     primary={entry.player.name}
                                     secondary={entry.state}
                                 />
-                                <Typography>{entry.score}</Typography>
+                                <Typography>{scoreFormat(entry.score)}</Typography>
                             </ListItem>
                         ))}
                     </List>

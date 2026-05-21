@@ -1,10 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 import castleLeaderboardService from '../services/castleLeaderboardService';
 
 import { BaseResponse } from "../models/response";
 
-const createLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+import { CreateLeaderboardInput, DeleteLeaderboardInput, GetLeaderboardInput } from "../schemas/castleLeaderboardSchema";
+
+const createLeaderboard = async (req: CreateLeaderboardInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const { date } = req.body;
         await castleLeaderboardService.createLeaderboard(date);
@@ -14,9 +16,9 @@ const createLeaderboard = async (req: Request, res: Response<BaseResponse>, next
     }
 }
 
-const deleteLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const deleteLeaderboard = async (req: DeleteLeaderboardInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const leaderboardId = Number(req.params.id);
+        const leaderboardId = req.params.id;
         await castleLeaderboardService.deleteLeaderboard(leaderboardId);
         res.status(200).json({ message: 'Leaderboard deleted successfully', success: true });
     } catch (error) {
@@ -24,9 +26,9 @@ const deleteLeaderboard = async (req: Request, res: Response<BaseResponse>, next
     }
 }
 
-const getLeaderboard = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getLeaderboard = async (req: GetLeaderboardInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const date = new Date(req.params.date);
+        const date = req.params.date;
         const result = await castleLeaderboardService.getLeaderboard(date);
         res.status(200).json({ data: result, success: true });
     } catch (error) {
@@ -37,5 +39,5 @@ const getLeaderboard = async (req: Request, res: Response<BaseResponse>, next: N
 export {
     createLeaderboard,
     deleteLeaderboard,
-    getLeaderboard,
+    getLeaderboard
 };

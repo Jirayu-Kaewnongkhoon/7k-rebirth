@@ -1,5 +1,4 @@
-export function getWeekday(dateStr: string) {
-    const date = new Date(dateStr);
+export function getWeekday(date: Date) {
     const weekday = (date.getDay() + 6) % 7;
     return weekday;
 }

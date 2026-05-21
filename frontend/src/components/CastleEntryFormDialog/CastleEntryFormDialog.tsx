@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { Delete, Save } from "@mui/icons-material";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -18,16 +18,19 @@ import type { IPlayer } from "../../types/player";
 import { getPlayers } from "../../services/playerService";
 import { createEntries, getEntries } from "../../services/castleEntryService";
 
-interface EntryInput {
+export interface EntryInput {
     playerId: number | null
     score: number
 }
 
-export default function CastleEntryFormDialog({
-    leaderboardId
-}: {
-    leaderboardId: number
-}) {
+export interface CastleEntryFormDialogHandle {
+    openWithEntries: (entries: EntryInput[]) => void;
+}
+
+function CastleEntryFormDialog(
+    { leaderboardId }: { leaderboardId: number },
+    ref: React.Ref<CastleEntryFormDialogHandle>
+) {
 
     const queryClient = useQueryClient();
 
@@ -37,7 +40,7 @@ export default function CastleEntryFormDialog({
     });
     const { data: scoreList } = useQuery<ICastleEntry[]>({
         queryKey: ['castle-entries', leaderboardId],
-        queryFn: () => getEntries(leaderboardId.toString()),
+        queryFn: () => getEntries(leaderboardId),
     });
 
     const [entries, setEntries] = useState<EntryInput[]>([
@@ -49,11 +52,18 @@ export default function CastleEntryFormDialog({
             ...entries
                 .map(e => e.playerId)
                 .filter((id): id is number => id !== null),
-            ...scoreList?.map(score => score.player.id) || []
+            ...(scoreList?.map(score => score.player.id) ?? [])
         ]
     )];
 
     const [open, setOpen] = useState(false);
+
+    useImperativeHandle(ref, () => ({
+        openWithEntries: (data: EntryInput[]) => {
+            setEntries(data.filter(e => e.score > 0));
+            setOpen(true);
+        }
+    }));
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => {
@@ -72,6 +82,29 @@ export default function CastleEntryFormDialog({
             [field]: value
         }
         setEntries(updated);
+    }
+
+    const handlePaste = (e: React.ClipboardEvent) => {
+        const text = e.clipboardData.getData('text');
+        const rows = text.trim().split('\n');
+
+        const parsed = rows
+            .map(row => row.split('\t'))           // แยกด้วย tab
+            .filter(cols => cols.length === 2)     // ต้องมีครบ 2 ช่อง
+            .map(cols => {
+                const playerName = cols[0].trim();
+                const player = playerOptions?.find(p => p.name === playerName);
+
+                return {
+                    playerId: player?.id ?? null,
+                    score: Number(cols[1].trim().replace(/,/g, '')),
+                };
+            });
+
+        if (parsed.length > 0) {
+            e.preventDefault(); // ไม่ให้ paste ลง input ปกติ
+            setEntries(parsed);
+        }
     }
 
     const handleAddRow = () => {
@@ -120,29 +153,30 @@ export default function CastleEntryFormDialog({
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>อันดับคะแนน</DialogTitle>
+                <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={2}>
+                    <Stack gap={1} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
-                            <Stack direction="row" spacing={2} key={index}>
+                            <Stack direction="row" gap={2} marginBlock={1} key={index}>
                                 <Autocomplete
                                     options={playerOptions?.filter(option => {
                                         const isSelected = selectedPlayerIds.includes(option.id);
-                                        return !isSelected;
-                                    }) || []}
+                                        const isActive = option.isActive;
+                                        return !isSelected && isActive;
+                                    }) ?? []}
                                     getOptionLabel={(option) => option.name}
-                                    value={playerOptions?.find(p => p.id === entry.playerId) || null}
+                                    value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
                                     onChange={(_, newValue) => {
                                         handleChange(index, "playerId", newValue?.id ?? null)
                                     }}
                                     renderInput={(params) => (
-                                        <TextField {...params} placeholder="ชื่อผู้เล่น" />
+                                        <TextField {...params} label="ชื่อผู้เล่น" />
                                     )}
                                     sx={{ width: 250 }}
                                 />
 
                                 <TextField
-                                    placeholder="คะแนน"
+                                    label="คะแนน"
                                     value={entry.score}
                                     onChange={(e) =>
                                         handleChange(index, "score", Number(e.target.value))
@@ -181,3 +215,5 @@ export default function CastleEntryFormDialog({
         </>
     )
 }
+
+export default forwardRef(CastleEntryFormDialog);

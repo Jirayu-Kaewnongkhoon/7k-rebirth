@@ -3,14 +3,17 @@ import { useState } from "react";
 import { useParams } from "react-router";
 
 import { ExpandLess, ExpandMore, Person } from "@mui/icons-material";
-import { Avatar, Box, Collapse, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
+import { Avatar, Box, Collapse, Divider, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
 
 import GuildBossEntryFormDialog from "../../components/GuildBossEntryFormDialog/GuildBossEntryFormDialog";
 
-import type { IGuildBoss, IGuildBossEntry } from "../../types/guildBoss";
+import type { IGuildBoss, IGuildBossEntry, IGuildBossSeason } from "../../types/guildBoss";
 
 import { getEntries } from "../../services/guildBossEntryService";
 import { getGuildBoss, getSeason } from "../../services/guildBossService";
+
+import { dateFormat } from "../../utils/date";
+import { scoreFormat } from "../../utils/score";
 
 function GuildBossEntry() {
     const { id } = useParams();
@@ -21,7 +24,7 @@ function GuildBossEntry() {
         data: season,
         isLoading,
         isError
-    } = useQuery<IGuildBossEntry>({
+    } = useQuery<IGuildBossSeason>({
         queryKey: ['guild-boss-season', parseInt(id)],
         queryFn: () => getSeason(parseInt(id)),
     });
@@ -49,8 +52,10 @@ function GuildBossEntry() {
 
     return (
         <>
-            <div>GuildBossEntry: {id}</div>
-
+            <Typography variant="h4" component="h1" gutterBottom>
+                วันที่: {dateFormat(season.startDate)} - {dateFormat(season.endDate)}
+            </Typography>
+            <Divider />
             {boss.map(b => (
                 <Entry key={b.id} seasonId={parseInt(id)} boss={b} />
             ))}
@@ -82,9 +87,9 @@ function Entry({
             <Skeleton
                 animation="wave"
                 variant="rounded"
-                width="60%"
-                height="30%"
-                sx={{ marginBlock: 2 }}
+                width="65%"
+                height="48px"
+                sx={{ marginBlock: 1.8 }}
             />
         );
     }
@@ -112,7 +117,7 @@ function Entry({
                             <ListItemText primary={`บอส${boss.name}`} />
                             {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                        <GuildBossEntryFormDialog seasonId={seasonId} boss={boss} scoreList={entries || []} />
+                        <GuildBossEntryFormDialog seasonId={seasonId} boss={boss} scoreList={entries ?? []} />
                     </Box>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         {entries?.length == 0 ? (
@@ -135,10 +140,10 @@ function Entry({
                                         </ListItemAvatar>
                                         <ListItemText
                                             primary={entry.player.name}
-                                            secondary={`คะแนนต่อรอบ: ${entry.score / entry.hits}`}
+                                            secondary={`คะแนนต่อรอบ: ${scoreFormat(entry.score / entry.hits)}`}
                                         />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: "flex-end" }}>
-                                            <Typography>คะแนน: {entry.score}</Typography>
+                                            <Typography>คะแนน: {scoreFormat(entry.score)}</Typography>
                                             <Typography>รอบตี: {entry.hits}</Typography>
                                         </Box>
                                     </ListItem>

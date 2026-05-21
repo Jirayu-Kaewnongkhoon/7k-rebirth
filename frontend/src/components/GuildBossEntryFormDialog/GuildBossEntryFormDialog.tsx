@@ -8,7 +8,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from "@mui/material/Divider";
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -51,7 +50,7 @@ export default function GuildBossEntryFormDialog({
             ...entries
                 .map(e => e.playerId)
                 .filter((id): id is number => id !== null),
-            ...scoreList?.map(score => score.player.id) || []
+            ...scoreList?.map(score => score.player.id) ?? []
         ]
     )];
 
@@ -74,6 +73,30 @@ export default function GuildBossEntryFormDialog({
             [field]: value
         }
         setEntries(updated);
+    }
+
+    const handlePaste = (e: React.ClipboardEvent) => {
+        const text = e.clipboardData.getData('text');
+        const rows = text.trim().split('\n');
+
+        const parsed = rows
+            .map(row => row.split('\t'))           // แยกด้วย tab
+            .filter(cols => cols.length === 3)     // ต้องมีครบ 3 ช่อง
+            .map(cols => {
+                const playerName = cols[0].trim();
+                const player = playerOptions?.find(p => p.name === playerName);
+
+                return {
+                    playerId: player?.id ?? null,
+                    score: Number(cols[1].trim().replace(/,/g, '')),
+                    hits: Number(cols[2].trim()),
+                };
+            });
+
+        if (parsed.length > 0) {
+            e.preventDefault(); // ไม่ให้ paste ลง input ปกติ
+            setEntries(parsed);
+        }
     }
 
     const handleAddRow = () => {
@@ -124,19 +147,19 @@ export default function GuildBossEntryFormDialog({
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>อันดับคะแนน : บอส{boss.name}</DialogTitle>
+                <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน : บอส{boss.name}</DialogTitle>
                 <DialogContent>
-                    <Divider sx={{ marginBlock: 1 }} />
-                    <Stack spacing={2}>
+                    <Stack spacing={2} paddingTop={2} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
                             <Stack direction="row" spacing={2} key={index}>
                                 <Autocomplete
                                     options={playerOptions?.filter(option => {
                                         const isSelected = selectedPlayerIds.includes(option.id);
-                                        return !isSelected;
-                                    }) || []}
+                                        const isActive = option.isActive;
+                                        return !isSelected && isActive;
+                                    }) ?? []}
                                     getOptionLabel={(option) => option.name}
-                                    value={playerOptions?.find(p => p.id === entry.playerId) || null}
+                                    value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
                                     onChange={(_, newValue) => {
                                         handleChange(index, "playerId", newValue?.id ?? null)
                                     }}

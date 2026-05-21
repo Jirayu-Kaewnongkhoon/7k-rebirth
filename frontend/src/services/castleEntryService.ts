@@ -1,5 +1,7 @@
 import { BASE_URL } from "../constants/api";
 
+import { fetchClient } from "../lib/fetch";
+
 interface EntryData {
     leaderboardId: number;
     entries: {
@@ -9,43 +11,34 @@ interface EntryData {
 }
 
 const createEntries = async (entryData: EntryData) => {
-    const response = await fetch(`${BASE_URL}/castleEntry`, {
+    const data = await fetchClient(`castleEntry`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(entryData)
     });
-    if (!response.ok) {
-        throw new Error('entry creation failed');
-    }
-    const data = await response.json();
     return data.data;
 }
 
-const createEntriesJson = async (formData: FormData) => {
-    const response = await fetch(`${BASE_URL}/castleEntry/json`, {
-        method: 'POST',
-        body: formData,
+const downloadJsonTemplate = async (leaderboardId: number) => {
+    const response = await fetch(`${BASE_URL}/castleEntry/json/${leaderboardId}`, {
+        credentials: 'include'
     });
     if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error('Download failed');
     }
-    const data = await response.json();
-    return data.data;
+    const blob = await response.blob();
+    return blob;
 }
 
-const getEntries = async (leaderboardId: string) => {
-    const response = await fetch(`${BASE_URL}/castleEntry/${leaderboardId}`);
-    if (!response.ok) {
-        throw new Error('entry fetch failed');
-    }
-    const data = await response.json();
+const getEntries = async (leaderboardId: number) => {
+    const data = await fetchClient(`castleEntry/${leaderboardId}`);
     return data.data;
 }
 
 export {
     createEntries,
-    createEntriesJson,
+    downloadJsonTemplate,
     getEntries,
 };

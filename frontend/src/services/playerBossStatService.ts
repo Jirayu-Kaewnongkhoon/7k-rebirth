@@ -1,14 +1,12 @@
-import { BASE_URL } from "../constants/api";
+import { fetchClient } from "../lib/fetch";
 
 const getPlayerBossStat = async (playerId: number) => {
-    const response = await fetch(`${BASE_URL}/playerBossStat/${playerId}`);
-    if (!response.ok) {
-        throw new Error('player stat fetch failed');
-    }
-    const data = await response.json();
+    const data = await fetchClient(`playerBossStat/${playerId}`);
     return data.data;
 }
 
 export {
     getPlayerBossStat
 };
+
+// TODO: remove unused service

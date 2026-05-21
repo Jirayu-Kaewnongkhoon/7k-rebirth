@@ -1,12 +1,22 @@
 import { Router } from 'express';
+import validate from 'express-zod-safe';
 
-import { createEntries, getEntries, createEntriesJson } from '../controllers/castleEntryController';
-import { upload } from '../lib/fileUpload';
+import {
+    createEntries,
+    downloadJsonTemplate,
+    getEntries
+} from '../controllers/castleEntryController';
+
+import {
+    createEntriesSchema,
+    downloadTemplateSchema,
+    getEntriesSchema
+} from '../schemas/castleEntrySchema';
 
 const router = Router();
 
-router.get('/:leaderboardId', getEntries);
-router.post('/', createEntries);
-router.post('/json', upload.single('file'), createEntriesJson);
+router.get('/:leaderboardId', validate({ params: getEntriesSchema }), getEntries);
+router.post('/', validate({ body: createEntriesSchema }), createEntries);
+router.get('/json/:leaderboardId', validate({ params: downloadTemplateSchema }), downloadJsonTemplate);
 
 export default router;

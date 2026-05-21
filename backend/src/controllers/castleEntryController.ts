@@ -1,10 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 import { BaseResponse } from "../models/response";
 
 import castleEntryService from "../services/castleEntryService";
 
-const createEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+import { CreateEntriesInput, DownloadTemplateInput, GetEntriesInput } from "../schemas/castleEntrySchema";
+
+const createEntries = async (req: CreateEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const data = req.body;
         await castleEntryService.createEntries(data);
@@ -14,9 +16,9 @@ const createEntries = async (req: Request, res: Response<BaseResponse>, next: Ne
     }
 }
 
-const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getEntries = async (req: GetEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const leaderboardId = Number(req.params.leaderboardId);
+        const leaderboardId = req.params.leaderboardId;
         const entries = await castleEntryService.getEntries(leaderboardId);
         res.status(200).json({ success: true, data: entries });
     } catch (error) {
@@ -24,18 +26,18 @@ const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextF
     }
 }
 
-const createEntriesJson = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const downloadJsonTemplate = async (req: DownloadTemplateInput, res: Response, next: NextFunction) => {
     try {
-        if (!req.file) throw new Error('No file uploaded');
+        const leaderboardId = req.params.leaderboardId;
 
-        const data = JSON.parse(req.file.buffer.toString());
-        
-        await castleEntryService.createEntries(data);
-        res.status(201).json({ success: true, message: 'Entries created successfully' });
+        const template = await castleEntryService.getJsonTemplate(leaderboardId);
 
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Content-Disposition", "attachment; filename=template.json");
+        res.json(template);
     } catch (error) {
         next(error);
     }
 }
 
-export { createEntries, getEntries, createEntriesJson };
+export { createEntries, downloadJsonTemplate, getEntries };

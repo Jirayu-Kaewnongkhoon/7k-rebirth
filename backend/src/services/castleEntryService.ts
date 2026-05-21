@@ -10,7 +10,7 @@ interface CreateEntryInput {
 interface EntryData {
     playerId: number;
     score: number;
-    state: STATE;
+    state?: STATE;
 }
 
 const createEntries = async (entryData: CreateEntryInput) => {
@@ -77,21 +77,23 @@ const createEntries = async (entryData: CreateEntryInput) => {
         });
 
         // Upsert stat
-        for (const statData of statUpsertList) {
-            await tx.playerBossStat.upsert({
-                where: {
-                    playerId_bossId: {
-                        playerId: statData.playerId,
-                        bossId: statData.bossId,
-                    }
-                },
-                update: {
-                    lastScore: statData.lastScore,
-                    maxScore: statData.maxScore,
-                },
-                create: statData
-            });
-        }
+        await Promise.all(
+            statUpsertList.map((statData) =>
+                tx.playerBossStat.upsert({
+                    where: {
+                        playerId_bossId: {
+                            playerId: statData.playerId,
+                            bossId: statData.bossId,
+                        },
+                    },
+                    update: {
+                        lastScore: statData.lastScore,
+                        maxScore: statData.maxScore,
+                    },
+                    create: statData,
+                })
+            )
+        );
 
         return { success: true, message: 'Entries created successfully' };
     });
@@ -106,7 +108,27 @@ const getEntries = async (leaderboardId: number) => {
     return result;
 }
 
+const getJsonTemplate = async (leaderboardId: number) => {
+    const players = await prisma.player.findMany({
+        where: { isActive: true },
+        orderBy: [{ id: "asc" }],
+        select: { id: true, name: true },
+    });
+
+    const template = {
+        leaderboardId,
+        entries: players.map((p) => ({
+            playerId: p.id,
+            name: p.name,
+            score: 0,
+        })),
+    };
+
+    return template;
+}
+
 export default {
     createEntries,
     getEntries,
+    getJsonTemplate,
 };

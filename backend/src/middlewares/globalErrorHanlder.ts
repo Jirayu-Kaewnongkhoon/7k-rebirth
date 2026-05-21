@@ -1,27 +1,36 @@
 import { Request, Response, NextFunction } from "express";
+
 import { HttpError } from "../models/errors";
 import { BaseResponse } from "../models/response";
 
+function parseError(error: unknown): { statusCode: number; message: string } {
+    if (error instanceof HttpError) {
+        return {
+            statusCode: error.statusCode,
+            message: error.message
+        };
+    }
+    if (error instanceof Error) {
+        return {
+            statusCode: 500,
+            message: error.message
+        };
+    }
+    return {
+        statusCode: 500,
+        message: `An unknown error occurred, ${String(error)}`
+    };
+}
+
 export function globalErrorHandler(
     error: unknown,
-    request: Request,
+    _request: Request,
     response: Response<BaseResponse>,
-    next: NextFunction
+    _next: NextFunction
 ) {
-    let statusCode = 500;
-    let message = '';
+    const { statusCode, message } = parseError(error);
 
-    if (error instanceof HttpError) {
-        statusCode = error.statusCode;
-    }
-
-    if (error instanceof Error) {
-        console.error(`${error.name}: ${error.message}`);
-        message = error.message;
-    } else {
-        console.error('Unknown error');
-        message = `An unknown error occurred, ${String(error)}`;
-    }
+    console.error(error instanceof Error ? `${error.name}: ${error.message}` : 'Unknown error');
 
     response.status(statusCode).send({
         message,

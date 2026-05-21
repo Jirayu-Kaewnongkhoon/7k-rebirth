@@ -10,6 +10,8 @@ import { getSeasons } from "../../services/guildBossService";
 
 import type { IGuildBossSeason } from "../../types/guildBoss";
 
+import { dateFormat } from "../../utils/date";
+
 interface IGuildBossSeasonResponse {
     seasons: IGuildBossSeason[]
     rowCount: number
@@ -67,14 +69,6 @@ function GuildBossSeasonList({
 }) {
 
     const navigate = useNavigate();
-
-    const dateFormat = (dateStr: string) => {
-        return new Intl.DateTimeFormat("th-TH", {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        }).format(new Date(dateStr))
-    }
 
     const handleClick = (id: number) => {
         navigate(`/boss/${id}`);

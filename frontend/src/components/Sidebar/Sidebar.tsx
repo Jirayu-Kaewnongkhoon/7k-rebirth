@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router';
 
-import { Castle, CrueltyFree, Menu, People } from '@mui/icons-material';
+import { Castle, CrueltyFree, Logout, Menu, People } from '@mui/icons-material';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,6 +16,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { StyledEngineProvider } from '@mui/material/styles';
+
+import { useAuth } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -49,6 +51,7 @@ function Sidebar2(props: Props) {
     const { window } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const { logoutMutation } = useAuth();
 
     const handleDrawerClose = () => {
         setIsClosing(true);
@@ -98,19 +101,30 @@ function Sidebar2(props: Props) {
                     ml: { sm: `${drawerWidth}px` },
                 }}
             >
-                <Toolbar>
+                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            onClick={handleDrawerToggle}
+                            sx={{ mr: 2, display: { sm: 'none' } }}
+                        >
+                            <Menu />
+                        </IconButton>
+                        <Typography variant="h6" noWrap component="div">
+                            7k: Rebirth
+                        </Typography>
+                    </Box>
                     <IconButton
                         color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        edge="end"
+                        loading={logoutMutation.isPending}
+                        onClick={() => logoutMutation.mutate()}
                     >
-                        <Menu />
+                        <Logout />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
-                        7k: Rebirth
-                    </Typography>
+
                 </Toolbar>
             </AppBar>
             <Box

@@ -7,21 +7,14 @@ import { getPlayer } from '../../services/playerService';
 
 import type { IPlayerWithStats } from '../../types/player';
 
+import { scoreFormat } from '../../utils/score';
+
 function PlayerView() {
     const { id: playerId } = useParams();
     const { data: player, isLoading, isError } = useQuery<IPlayerWithStats>({
         queryKey: ['player', playerId],
         queryFn: () => getPlayer(Number(playerId)!)
     });
-
-    const formatScore = (score: number) => {
-        if (score >= 1_000_000) {
-            return `${(score / 1_000_000).toFixed(2)}M`;
-        } else if (score >= 1_000) {
-            return `${(score / 1_000).toFixed(2)}K`;
-        }
-        return score.toString();
-    };
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -31,7 +24,7 @@ function PlayerView() {
         return <div>Error loading player.</div>;
     }
 
-    if (!player || !player?.isActive) {
+    if (!player || !player.isActive) {
         return <>player not found</>
     }
 
@@ -74,8 +67,8 @@ function PlayerView() {
                                     }}
                                 />
                                 <ListItemText
-                                    primary={`คะแนนล่าสุด: ${formatScore(stat.lastScore)}`}
-                                    secondary={`คะแนนสูงสุด: ${formatScore(stat.maxScore)}`}
+                                    primary={`คะแนนล่าสุด: ${scoreFormat(stat.lastScore)}`}
+                                    secondary={`คะแนนสูงสุด: ${scoreFormat(stat.maxScore)}`}
                                     sx={{ textAlign: 'right' }}
                                 />
                             </ListItem>

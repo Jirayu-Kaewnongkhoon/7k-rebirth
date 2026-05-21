@@ -4,7 +4,9 @@ import { BaseResponse } from "../models/response";
 
 import playerService from "../services/playerService";
 
-const createPlayer = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+import { CreatePlayerInput, DeletePlayerInput, GetPlayerInput } from "../schemas/playerSchema";
+
+const createPlayer = async (req: CreatePlayerInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const playerName = req.body.name;
         await playerService.createPlayer(playerName);
@@ -14,9 +16,9 @@ const createPlayer = async (req: Request, res: Response<BaseResponse>, next: Nex
     }
 }
 
-const getPlayer = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getPlayer = async (req: GetPlayerInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const playerId = Number(req.params.id);
+        const playerId = req.params.id;
         const player = await playerService.getPlayer(playerId);
         res.status(200).json({ success: true, data: player });
     } catch (error) {
@@ -33,9 +35,9 @@ const getPlayers = async (_req: Request, res: Response<BaseResponse>, next: Next
     }
 }
 
-const deletePlayer = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const deletePlayer = async (req: DeletePlayerInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const playerId = Number(req.params.id);
+        const playerId = req.params.id;
         await playerService.deletePlayer(playerId);
         res.status(200).json({ success: true, message: 'Player deleted successfully' });
     } catch (error) {
