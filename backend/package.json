@@ -19,6 +19,7 @@
     "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
+    "express-zod-safe": "^3.2.1",
     "helmet": "^6.0.2",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.0",

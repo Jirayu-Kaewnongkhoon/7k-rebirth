@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { HttpError } from "../models/errors";
 import { BaseResponse } from "../models/response";
 
+import { LoginInput } from "../schemas/authSchema";
+
 const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -12,7 +14,7 @@ const COOKIE_OPTIONS = {
     maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 
-const login = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const login = async (req: LoginInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const { username, password } = req.body;
 

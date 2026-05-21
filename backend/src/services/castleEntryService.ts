@@ -10,7 +10,7 @@ interface CreateEntryInput {
 interface EntryData {
     playerId: number;
     score: number;
-    state: STATE;
+    state?: STATE;
 }
 
 const createEntries = async (entryData: CreateEntryInput) => {

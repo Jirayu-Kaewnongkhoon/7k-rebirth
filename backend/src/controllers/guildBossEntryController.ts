@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
+import { NextFunction, Response } from "express";
 
 import { BaseResponse } from "../models/response";
 
 import guildBossEntryService from "../services/guildBossEntryService";
 
-const createEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+import { CreateEntriesInput, GetEntriesInput } from "../schemas/guildBossEntrySchema";
+
+const createEntries = async (req: CreateEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const data = req.body;
         await guildBossEntryService.createEntries(data);
@@ -15,13 +16,9 @@ const createEntries = async (req: Request, res: Response<BaseResponse>, next: Ne
     }
 }
 
-const getEntriesSchema = z.object({
-    seasonId: z.coerce.number(),
-    bossId: z.coerce.number()
-});
-const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getEntries = async (req: GetEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const { seasonId, bossId } = getEntriesSchema.parse(req.query);
+        const { seasonId, bossId } = req.query;
         const entries = await guildBossEntryService.getEntries({ seasonId, bossId });
         res.status(200).json({ success: true, data: entries });
     } catch (error) {

@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { prisma } from "./prisma";
+import { setGlobalOptions } from 'express-zod-safe';
 
 // routes
 import authRoute from './routes/authRoute';
@@ -20,6 +21,8 @@ import playerRoute from './routes/playerRoute';
 import { globalErrorHandler } from './middlewares/globalErrorHanlder';
 import { authMiddleware } from './middlewares/auth';
 
+import { BadRequest } from './models/errors';
+
 const app = express();
 
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -31,6 +34,12 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+setGlobalOptions({
+    handler: (errors, _req, _res, next) => {
+        next(new BadRequest(errors.map(e => e.errors.issues.map(i => i.message).join(', ')).join(', ')));
+    }
+});
 
 // apply routes
 app.use('/auth', authRoute);

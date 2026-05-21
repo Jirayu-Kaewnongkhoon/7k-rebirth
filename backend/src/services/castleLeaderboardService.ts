@@ -2,12 +2,12 @@ import { prisma } from "../prisma";
 
 import { getWeekday } from "../utils/date";
 
-const createLeaderboard = async (date: string) => {
+const createLeaderboard = async (date: Date) => {
     const weekday = getWeekday(date);
 
     const result = await prisma.castleLeaderboard.create({
         data: {
-            date: new Date(date),
+            date,
             boss: {
                 connect: { weekday }
             }

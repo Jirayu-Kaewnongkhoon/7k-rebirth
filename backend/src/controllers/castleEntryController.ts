@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
+import { NextFunction, Response } from "express";
 
 import { BaseResponse } from "../models/response";
 
 import castleEntryService from "../services/castleEntryService";
 
-const createEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+import { CreateEntriesInput, DownloadTemplateInput, GetEntriesInput } from "../schemas/castleEntrySchema";
+
+const createEntries = async (req: CreateEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
         const data = req.body;
         await castleEntryService.createEntries(data);
@@ -15,9 +16,9 @@ const createEntries = async (req: Request, res: Response<BaseResponse>, next: Ne
     }
 }
 
-const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextFunction) => {
+const getEntries = async (req: GetEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
-        const leaderboardId = Number(req.params.leaderboardId);
+        const leaderboardId = req.params.leaderboardId;
         const entries = await castleEntryService.getEntries(leaderboardId);
         res.status(200).json({ success: true, data: entries });
     } catch (error) {
@@ -25,12 +26,9 @@ const getEntries = async (req: Request, res: Response<BaseResponse>, next: NextF
     }
 }
 
-const downloadTemplateSchema = z.object({
-    leaderboardId: z.coerce.number()
-});
-const downloadJsonTemplate = async (req: Request, res: Response, next: NextFunction) => {
+const downloadJsonTemplate = async (req: DownloadTemplateInput, res: Response, next: NextFunction) => {
     try {
-        const { leaderboardId } = downloadTemplateSchema.parse(req.params);
+        const leaderboardId = req.params.leaderboardId;
 
         const template = await castleEntryService.getJsonTemplate(leaderboardId);
 
@@ -42,4 +40,4 @@ const downloadJsonTemplate = async (req: Request, res: Response, next: NextFunct
     }
 }
 
-export { createEntries, getEntries, downloadJsonTemplate };
+export { createEntries, downloadJsonTemplate, getEntries };
