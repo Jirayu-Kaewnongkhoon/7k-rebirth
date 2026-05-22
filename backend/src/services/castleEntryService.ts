@@ -108,7 +108,7 @@ const createEntries = async (entryData: CreateEntryInput) => {
                 })
             )
         );
-    });
+    }, { timeout: 10000 });
 
     return { success: true, message: 'Entries created successfully' };
 }
