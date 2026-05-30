@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 import { Delete, Save } from "@mui/icons-material";
 import Autocomplete from '@mui/material/Autocomplete';
+import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -17,6 +18,8 @@ import type { IPlayer } from "../../types/player";
 
 import { getPlayers } from "../../services/playerService";
 import { createEntries, getEntries } from "../../services/castleEntryService";
+
+import { scoreFormat } from "../../utils/score";
 
 export interface EntryInput {
     playerId: number | null
@@ -47,15 +50,6 @@ function CastleEntryFormDialog(
         { playerId: null, score: 0 }
     ]);
 
-    const selectedPlayerIds = [...new Set(
-        [
-            ...entries
-                .map(e => e.playerId)
-                .filter((id): id is number => id !== null),
-            ...(scoreList?.map(score => score.player.id) ?? [])
-        ]
-    )];
-
     const [open, setOpen] = useState(false);
 
     useImperativeHandle(ref, () => ({
@@ -70,19 +64,6 @@ function CastleEntryFormDialog(
         setOpen(false);
         setEntries([{ playerId: null, score: 0 }]);
     };
-
-    const handleChange = (
-        index: number,
-        field: keyof EntryInput,
-        value: string | number | null
-    ) => {
-        const updated = [...entries]
-        updated[index] = {
-            ...updated[index],
-            [field]: value
-        }
-        setEntries(updated);
-    }
 
     const handlePaste = (e: React.ClipboardEvent) => {
         const text = e.clipboardData.getData('text');
@@ -111,10 +92,31 @@ function CastleEntryFormDialog(
         setEntries([...entries, { playerId: null, score: 0 }])
     }
 
-    const handleRemoveRow = (index: number) => {
-        const updated = entries.filter((_, i) => i !== index)
-        setEntries(updated)
-    }
+    const selectedPlayerIds = useMemo(() => [
+        ...new Set([
+            ...entries.map(e => e.playerId).filter((id): id is number => id !== null),
+            ...(scoreList?.map(s => s.player.id) ?? [])
+        ])
+    ], [entries, scoreList]);
+
+    const totalScore = useMemo(
+        () => scoreFormat(entries.reduce((sum, e) => sum + e.score, 0)),
+        [entries]
+    );
+
+    const handleChange = useCallback(
+        (index: number, field: keyof EntryInput, value: string | number | null) => {
+            setEntries(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], [field]: value };
+                return updated;
+            });
+        }, []
+    );
+
+    const handleRemoveRow = useCallback((index: number) => {
+        setEntries(prev => prev.filter((_, i) => i !== index));
+    }, []);
 
     const handleSubmit = () => {
         const data = {
@@ -151,53 +153,40 @@ function CastleEntryFormDialog(
                 fullWidth
                 maxWidth="md"
                 open={open}
-                onClose={handleClose}
+                disableEscapeKeyDown={mutation.isPending}
+                onClose={() => {
+                    if (mutation.isPending) return;
+                    handleClose();
+                }}
             >
-                <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน</DialogTitle>
-                <DialogContent>
+                <DialogTitle>
+                    {`อันดับคะแนน `}
+                    <Box component="span" color="text.secondary">
+                        (รวม : {totalScore})
+                    </Box>
+                </DialogTitle>
+                <DialogContent dividers>
                     <Stack gap={1} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
-                            <Stack direction="row" gap={2} marginBlock={1} key={index}>
-                                <Autocomplete
-                                    options={playerOptions?.filter(option => {
-                                        const isSelected = selectedPlayerIds.includes(option.id);
-                                        const isActive = option.isActive;
-                                        return !isSelected && isActive;
-                                    }) ?? []}
-                                    getOptionLabel={(option) => option.name}
-                                    value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
-                                    onChange={(_, newValue) => {
-                                        handleChange(index, "playerId", newValue?.id ?? null)
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="ชื่อผู้เล่น" />
-                                    )}
-                                    sx={{ width: 250 }}
-                                />
-
-                                <TextField
-                                    label="คะแนน"
-                                    value={entry.score}
-                                    onChange={(e) =>
-                                        handleChange(index, "score", Number(e.target.value))
-                                    }
-                                />
-
-                                <IconButton
-                                    color="error"
-                                    onClick={() => handleRemoveRow(index)}
-                                >
-                                    <Delete />
-                                </IconButton>
-                            </Stack>
+                            <Entry
+                                key={index}
+                                entry={entry}
+                                index={index}
+                                playerOptions={playerOptions ?? []}
+                                selectedPlayerIds={selectedPlayerIds}
+                                onChange={handleChange}
+                                onRemove={handleRemoveRow}
+                            />
                         ))}
+                    </Stack>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'space-between' }}>
+                    <Button onClick={handleAddRow}>
+                        เพิ่มช่องกรอก
+                    </Button>
 
-                        <Button variant="outlined" onClick={handleAddRow}>
-                            เพิ่มช่องกรอก
-                        </Button>
-
+                    <Box>
                         <Button
-                            variant="contained"
                             disabled={entries.some(e => e.playerId == null) || entries.length == 0}
                             onClick={handleSubmit}
                             loading={mutation.isPending}
@@ -206,10 +195,10 @@ function CastleEntryFormDialog(
                         >
                             Submit
                         </Button>
-                    </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Close</Button>
+                        <Button disabled={mutation.isPending} onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Box>
                 </DialogActions>
             </Dialog>
         </>
@@ -217,3 +206,74 @@ function CastleEntryFormDialog(
 }
 
 export default forwardRef(CastleEntryFormDialog);
+
+interface EntryProps {
+    entry: EntryInput;
+    index: number;
+    playerOptions: IPlayer[];
+    selectedPlayerIds: number[];
+    onChange: (index: number, field: keyof EntryInput, value: string | number | null) => void;
+    onRemove: (index: number) => void;
+}
+
+const Entry = memo(({ entry, index, playerOptions, selectedPlayerIds, onChange, onRemove }: EntryProps) => {
+    const [localScore, setLocalScore] = useState(entry.score);
+
+    useEffect(() => {
+        setLocalScore(entry.score);
+    }, [entry.score]);
+
+    const debouncedOnChange = useMemo(
+        () => debounce((value: number) => {
+            onChange(index, "score", value);
+        }, 700),
+        [index, onChange]
+    );
+
+    return (
+        <Stack direction="row" gap={2} marginBlock={1}>
+            <Autocomplete
+                options={playerOptions?.filter(option => {
+                    const isSelected = selectedPlayerIds.includes(option.id);
+                    const isActive = option.isActive;
+                    return !isSelected && isActive;
+                }) ?? []}
+                getOptionLabel={(option) => option.name}
+                value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
+                onChange={(_, newValue) => {
+                    onChange(index, "playerId", newValue?.id ?? null)
+                }}
+                renderInput={(params) => (
+                    <TextField {...params} label="ชื่อผู้เล่น" />
+                )}
+                sx={{ width: 250 }}
+            />
+
+            <TextField
+                label="คะแนน"
+                value={localScore}
+                type="number"
+                onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setLocalScore(value);           // update UI ทันที
+                    debouncedOnChange(value);        // update parent state หน่วง 300ms
+                }}
+            />
+
+            <IconButton
+                color="error"
+                onClick={() => onRemove(index)}
+            >
+                <Delete />
+            </IconButton>
+        </Stack>
+    )
+});
+
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
+    let timer: ReturnType<typeof setTimeout>;
+    return (...args: Parameters<T>) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}

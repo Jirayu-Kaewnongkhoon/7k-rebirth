@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import { Delete, Save } from "@mui/icons-material";
 import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -45,15 +46,6 @@ export default function GuildBossEntryFormDialog({
         { playerId: null, score: 0, hits: 0 }
     ]);
 
-    const selectedPlayerIds = [...new Set(
-        [
-            ...entries
-                .map(e => e.playerId)
-                .filter((id): id is number => id !== null),
-            ...scoreList?.map(score => score.player.id) ?? []
-        ]
-    )];
-
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => setOpen(true);
@@ -61,19 +53,6 @@ export default function GuildBossEntryFormDialog({
         setOpen(false);
         setEntries([{ playerId: null, score: 0, hits: 0 }]);
     };
-
-    const handleChange = (
-        index: number,
-        field: keyof EntryInput,
-        value: string | number | null
-    ) => {
-        const updated = [...entries]
-        updated[index] = {
-            ...updated[index],
-            [field]: value
-        }
-        setEntries(updated);
-    }
 
     const handlePaste = (e: React.ClipboardEvent) => {
         const text = e.clipboardData.getData('text');
@@ -103,10 +82,26 @@ export default function GuildBossEntryFormDialog({
         setEntries([...entries, { playerId: null, score: 0, hits: 0 }])
     }
 
-    const handleRemoveRow = (index: number) => {
-        const updated = entries.filter((_, i) => i !== index)
-        setEntries(updated)
-    }
+    const selectedPlayerIds = useMemo(() => [
+        ...new Set([
+            ...entries.map(e => e.playerId).filter((id): id is number => id !== null),
+            ...(scoreList?.map(s => s.player.id) ?? [])
+        ])
+    ], [entries, scoreList]);
+
+    const handleChange = useCallback(
+        (index: number, field: keyof EntryInput, value: string | number | null) => {
+            setEntries(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], [field]: value };
+                return updated;
+            });
+        }, []
+    );
+
+    const handleRemoveRow = useCallback((index: number) => {
+        setEntries(prev => prev.filter((_, i) => i !== index));
+    }, []);
 
     const handleSubmit = () => {
         const data = {
@@ -148,56 +143,27 @@ export default function GuildBossEntryFormDialog({
                 onClose={handleClose}
             >
                 <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน : บอส{boss.name}</DialogTitle>
-                <DialogContent>
+                <DialogContent dividers>
                     <Stack spacing={2} paddingTop={2} onPaste={handlePaste}>
                         {entries.map((entry, index) => (
-                            <Stack direction="row" spacing={2} key={index}>
-                                <Autocomplete
-                                    options={playerOptions?.filter(option => {
-                                        const isSelected = selectedPlayerIds.includes(option.id);
-                                        const isActive = option.isActive;
-                                        return !isSelected && isActive;
-                                    }) ?? []}
-                                    getOptionLabel={(option) => option.name}
-                                    value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
-                                    onChange={(_, newValue) => {
-                                        handleChange(index, "playerId", newValue?.id ?? null)
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="ชื่อผู้เล่น" />
-                                    )}
-                                    sx={{ width: 250 }}
-                                />
-
-                                <TextField
-                                    label="คะแนน"
-                                    value={entry.score}
-                                    onChange={(e) =>
-                                        handleChange(index, "score", Number(e.target.value))
-                                    }
-                                />
-
-                                <TextField
-                                    label="จำนวนรอบ"
-                                    value={entry.hits}
-                                    onChange={(e) =>
-                                        handleChange(index, "hits", Number(e.target.value))
-                                    }
-                                />
-
-                                <IconButton
-                                    color="error"
-                                    onClick={() => handleRemoveRow(index)}
-                                >
-                                    <Delete />
-                                </IconButton>
-                            </Stack>
+                            <Entry
+                                key={index}
+                                entry={entry}
+                                index={index}
+                                playerOptions={playerOptions ?? []}
+                                selectedPlayerIds={selectedPlayerIds}
+                                onChange={handleChange}
+                                onRemove={handleRemoveRow}
+                            />
                         ))}
+                    </Stack>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'space-between' }}>
+                    <Button onClick={handleAddRow}>
+                        เพิ่มช่องกรอก
+                    </Button>
 
-                        <Button variant="outlined" onClick={handleAddRow}>
-                            เพิ่มช่องกรอก
-                        </Button>
-
+                    <Box>
                         <Button
                             variant="contained"
                             disabled={entries.some(e => e.playerId == null) || entries.length == 0}
@@ -208,12 +174,67 @@ export default function GuildBossEntryFormDialog({
                         >
                             Submit
                         </Button>
-                    </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Close</Button>
+                        <Button onClick={handleClose}>Close</Button>
+                    </Box>
                 </DialogActions>
             </Dialog>
         </>
     )
 }
+
+interface EntryProps {
+    entry: EntryInput;
+    index: number;
+    playerOptions: IPlayer[];
+    selectedPlayerIds: number[];
+    onChange: (index: number, field: keyof EntryInput, value: string | number | null) => void;
+    onRemove: (index: number) => void;
+}
+
+const Entry = memo(({ entry, index, playerOptions, selectedPlayerIds, onChange, onRemove }: EntryProps) => {
+    return (
+        <Stack direction="row" spacing={2}>
+            <Autocomplete
+                options={playerOptions?.filter(option => {
+                    const isSelected = selectedPlayerIds.includes(option.id);
+                    const isActive = option.isActive;
+                    return !isSelected && isActive;
+                }) ?? []}
+                getOptionLabel={(option) => option.name}
+                value={playerOptions?.find(p => p.id === entry.playerId) ?? null}
+                onChange={(_, newValue) => {
+                    onChange(index, "playerId", newValue?.id ?? null)
+                }}
+                renderInput={(params) => (
+                    <TextField {...params} label="ชื่อผู้เล่น" />
+                )}
+                sx={{ width: 250 }}
+            />
+
+            <TextField
+                label="คะแนน"
+                type="number"
+                value={entry.score}
+                onChange={(e) =>
+                    onChange(index, "score", Number(e.target.value))
+                }
+            />
+
+            <TextField
+                label="จำนวนรอบ"
+                type="number"
+                value={entry.hits}
+                onChange={(e) =>
+                    onChange(index, "hits", Number(e.target.value))
+                }
+            />
+
+            <IconButton
+                color="error"
+                onClick={() => onRemove(index)}
+            >
+                <Delete />
+            </IconButton>
+        </Stack>
+    )
+});

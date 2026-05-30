@@ -55,40 +55,6 @@ function CastleEntry() {
         }
     });
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const content = e.target?.result as string;
-                const jsonData = JSON.parse(content) as JsonData;
-                dialogRef.current?.openWithEntries(jsonData.entries);
-                event.target!.value = ''; // Reset the input
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    const handleDownloadTemplate = async () => {
-        try {
-            const blob = await downloadJsonTemplate(leaderboard?.id!);
-
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "template.json";
-            a.click();
-
-            URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Error downloading template:', error);
-        }
-    }
-
     if (leaderboardLoading) {
         return <div>Loading...</div>;
     }
@@ -112,6 +78,40 @@ function CastleEntry() {
         )
     }
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target?.result as string;
+                const jsonData = JSON.parse(content) as JsonData;
+                dialogRef.current?.openWithEntries(jsonData.entries);
+                event.target!.value = ''; // Reset the input
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    const handleDownloadTemplate = async () => {
+        try {
+            const blob = await downloadJsonTemplate(leaderboard.id);
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "template.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading template:', error);
+        }
+    }
+
     return (
         <>
             <Box
@@ -124,7 +124,7 @@ function CastleEntry() {
             >
                 <Box>
                     <Typography variant="h4" noWrap overflow={'visible'}>
-                        {leaderboard?.boss.name} : {dateFormat(leaderboard?.date!)}
+                        {leaderboard.boss.name} : {dateFormat(leaderboard.date)}
                     </Typography>
                 </Box>
                 <Box
@@ -135,7 +135,7 @@ function CastleEntry() {
                     }}
                 >
                     <CastleEntryFormDialog
-                        leaderboardId={leaderboard?.id!}
+                        leaderboardId={leaderboard.id}
                         ref={dialogRef}
                     />
                     <Button
@@ -165,7 +165,7 @@ function CastleEntry() {
 
             <Divider />
 
-            <Entries id={leaderboard?.id!} />
+            <Entries id={leaderboard.id} />
         </>
     )
 }
@@ -184,6 +184,8 @@ function Entries({ id }: { id: number }) {
         enabled: !!id
     });
 
+    const total = entries?.reduce((sum, entry) => sum + entry.score, 0) ?? 0;
+
     if (entriesLoading) {
         return <div>Loading...</div>;
     }
@@ -194,9 +196,15 @@ function Entries({ id }: { id: number }) {
 
     return (
         <Box marginBlock={2}>
-            <Typography variant="h5" noWrap>
-                {`อันดับคะแนน (${entries?.length} รายการ)`}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: { sm: 'center' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
+                <Typography variant="h5" noWrap>
+                    {`อันดับคะแนน (${entries?.length} รายการ)`}
+                </Typography>
+                <Typography variant="h5" sx={{ display: { xs: 'none', sm: 'block' } }}>|</Typography>
+                <Typography variant="h5" noWrap>
+                    {`คะแนนรวม : ${total.toLocaleString()}`}
+                </Typography>
+            </Box>
             <Grid container spacing={2}>
                 <Grid
                     size={{
@@ -204,29 +212,35 @@ function Entries({ id }: { id: number }) {
                         md: 8,
                     }}
                 >
-                    <List>
-                        {entries?.map((entry) => (
-                            <ListItem
-                                key={entry.id}
-                                sx={{
-                                    '&:nth-of-type(even)': {
-                                        backgroundColor: '#9e9e9e22'
-                                    }
-                                }}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <Person />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={entry.player.name}
-                                    secondary={entry.state}
-                                />
-                                <Typography>{scoreFormat(entry.score)}</Typography>
-                            </ListItem>
-                        ))}
-                    </List>
+                    {entries?.length === 0 ? (
+                        <Typography variant="body1" color="text.secondary" textAlign="center" padding={8}>
+                            ยังไม่มีข้อมูลสถิติ
+                        </Typography>
+                    ) : (
+                        <List>
+                            {entries?.map((entry) => (
+                                <ListItem
+                                    key={entry.id}
+                                    sx={{
+                                        '&:nth-of-type(even)': {
+                                            backgroundColor: '#9e9e9e22'
+                                        }
+                                    }}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <Person />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={entry.player.name}
+                                        secondary={entry.state}
+                                    />
+                                    <Typography>{scoreFormat(entry.score)}</Typography>
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
                 </Grid>
             </Grid>
         </Box>
