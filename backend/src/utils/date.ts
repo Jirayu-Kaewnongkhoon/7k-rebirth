@@ -3,13 +3,24 @@ export function getWeekday(date: Date) {
     return weekday;
 }
 
-export function getEndDate(startDateStr: string) {
-    const [y, m, d] = startDateStr.split("-").map(Number);
-    const start = new Date(Date.UTC(y, m - 1, d));
+export function getEndDate(startDate: Date) {
+    const end = new Date(startDate);
+    end.setUTCDate(startDate.getUTCDate() + 13);
+    return end;
+}
+
+export function getCalendarRange(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+
+    const start = new Date(firstDay);
+    start.setDate(firstDay.getDate() - firstDay.getDay());
+
+    // force 6 แถว = 42 วันเสมอ
     const end = new Date(start);
-    end.setUTCDate(start.getUTCDate() + 13);
-    return {
-        startDate: start,
-        endDate: end,
-    }
+    end.setDate(start.getDate() + 41);
+
+    return { start, end };
 }

@@ -17,16 +17,15 @@ import { scoreFormat } from "../../utils/score";
 
 function GuildBossEntry() {
     const { id } = useParams();
-
-    if (!id || Number.isNaN(Number(id))) return <div>invalid id</div>
+    const seasonId = parseInt(id!);
 
     const {
         data: season,
         isLoading,
         isError
     } = useQuery<IGuildBossSeason>({
-        queryKey: ['guild-boss-season', parseInt(id)],
-        queryFn: () => getSeason(parseInt(id)),
+        queryKey: ['guild-boss-season', seasonId],
+        queryFn: () => getSeason(seasonId),
     });
 
     const { data: boss } = useQuery<IGuildBoss[]>({
@@ -57,7 +56,7 @@ function GuildBossEntry() {
             </Typography>
             <Divider />
             {boss.map(b => (
-                <Entry key={b.id} seasonId={parseInt(id)} boss={b} />
+                <Entry key={b.id} seasonId={seasonId} boss={b} />
             ))}
         </>
     )
@@ -121,7 +120,9 @@ function Entry({
                     </Box>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         {entries?.length == 0 ? (
-                            <Typography variant="h6" noWrap textAlign="center">no data</Typography>
+                            <Typography variant="body1" noWrap textAlign="center" padding={2}>
+                                ยังไม่มีข้อมูลสถิติ
+                            </Typography>
                         ) : (
                             <List>
                                 {entries?.map((entry) => (

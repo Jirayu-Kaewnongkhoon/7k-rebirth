@@ -21,8 +21,14 @@ const getLeaderboard = async (date: string) => {
     return data.data;
 }
 
+const getLeaderboards = async (date: string) => {
+    const data = await fetchClient(`castleLeaderboard/${date}/all`);
+    return data.data;
+}
+
 export {
     createLeaderboard,
     deleteLeaderboard,
     getLeaderboard,
+    getLeaderboards
 };

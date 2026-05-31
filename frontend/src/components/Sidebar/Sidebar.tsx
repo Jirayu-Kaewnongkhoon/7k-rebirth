@@ -47,7 +47,7 @@ interface Props {
     window?: () => Window;
 }
 // TODO: แก้ warning focus
-function Sidebar2(props: Props) {
+function Sidebar(props: Props) {
     const { window } = props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -102,7 +102,7 @@ function Sidebar2(props: Props) {
                 }}
             >
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
                             color="inherit"
                             aria-label="open drawer"
@@ -173,7 +173,7 @@ function Sidebar2(props: Props) {
     )
 }
 
-export default withExtraInfo(Sidebar2)
+export default withExtraInfo(Sidebar)
 
 function withExtraInfo(
     // Then we need to type the incoming component.

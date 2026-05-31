@@ -36,8 +36,19 @@ const getLeaderboard = async (req: GetLeaderboardInput, res: Response<BaseRespon
     }
 }
 
+const getLeaderboards = async (req: GetLeaderboardInput, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const date = req.params.date;
+        const result = await castleLeaderboardService.getLeaderboards(date);
+        res.status(200).json({ data: result, success: true });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export {
     createLeaderboard,
     deleteLeaderboard,
-    getLeaderboard
+    getLeaderboard,
+    getLeaderboards
 };

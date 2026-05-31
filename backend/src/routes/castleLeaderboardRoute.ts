@@ -5,6 +5,7 @@ import {
     createLeaderboard,
     deleteLeaderboard,
     getLeaderboard,
+    getLeaderboards,
 } from '../controllers/castleLeaderboardController';
 
 import {
@@ -16,6 +17,7 @@ import {
 const router = Router();
 
 router.get('/:date', validate({ params: getLeaderboardSchema }), getLeaderboard);
+router.get('/:date/all', validate({ params: getLeaderboardSchema }), getLeaderboards);
 router.post('/', validate({ body: createLeaderboardSchema }), createLeaderboard);
 router.delete('/:id', validate({ params: deleteLeaderboardSchema }), deleteLeaderboard);
 
