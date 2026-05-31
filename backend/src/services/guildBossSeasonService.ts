@@ -4,8 +4,8 @@ import { BadRequest } from "../models/errors";
 
 import { getEndDate } from "../utils/date";
 
-const createGuildBossSeason = async (startDateStr: string) => {
-    const { startDate, endDate } = getEndDate(startDateStr);
+const createGuildBossSeason = async (startDate: Date) => {
+    const endDate = getEndDate(startDate);
 
     const overlap = await prisma.guildBossSeason.findFirst({
         where: {

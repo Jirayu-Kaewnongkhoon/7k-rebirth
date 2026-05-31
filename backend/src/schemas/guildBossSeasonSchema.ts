@@ -2,7 +2,7 @@ import { ValidatedRequest } from "express-zod-safe";
 import { z } from "zod";
 
 export const createGuildBossSeasonSchema = z.object({
-    startDate: z.iso.date(),
+    startDate: z.iso.date().transform(val => new Date(val)),
 });
 
 export const getSeasonsSchema = z.object({

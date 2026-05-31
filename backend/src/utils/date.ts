@@ -3,13 +3,8 @@ export function getWeekday(date: Date) {
     return weekday;
 }
 
-export function getEndDate(startDateStr: string) {
-    const [y, m, d] = startDateStr.split("-").map(Number);
-    const start = new Date(Date.UTC(y, m - 1, d));
-    const end = new Date(start);
-    end.setUTCDate(start.getUTCDate() + 13);
-    return {
-        startDate: start,
-        endDate: end,
-    }
+export function getEndDate(startDate: Date) {
+    const end = new Date(startDate);
+    end.setUTCDate(startDate.getUTCDate() + 13);
+    return end;
 }
