@@ -17,3 +17,11 @@ export interface ICastleEntry {
     score: number;
     state: string;
 }
+
+export interface ILeaderboardEvent {
+    id: number;
+    date: string;
+    _count: {
+        entries: number;
+    };
+}

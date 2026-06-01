@@ -53,7 +53,11 @@ export default function PlayerFormDialog() {
                 fullWidth
                 maxWidth="md"
                 open={open}
-                onClose={handleClose}
+                disableEscapeKeyDown={mutation.isPending}
+                onClose={() => {
+                    if (mutation.isPending) return;
+                    handleClose();
+                }}
             >
                 <DialogTitle>ชื่อผู้เล่น</DialogTitle>
                 <DialogContent>
@@ -64,20 +68,21 @@ export default function PlayerFormDialog() {
                             onChange={handleChange}
                         />
 
-                        <Button
-                            variant="contained"
-                            disabled={name == ""}
-                            onClick={handleSubmit}
-                            loading={mutation.isPending}
-                            loadingPosition="start"
-                            startIcon={<Save />}
-                        >
-                            Submit
-                        </Button>
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Close</Button>
+                    <Button
+                        disabled={name == ""}
+                        onClick={handleSubmit}
+                        loading={mutation.isPending}
+                        loadingPosition="start"
+                        startIcon={<Save />}
+                    >
+                        บันทึก
+                    </Button>
+                    <Button disabled={mutation.isPending} onClick={handleClose}>
+                        ปิด
+                    </Button>
                 </DialogActions>
             </Dialog >
         </>

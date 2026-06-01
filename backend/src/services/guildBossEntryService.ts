@@ -27,7 +27,7 @@ const createEntries = async (entryData: CreateEntryInput) => {
 }
 
 const getEntries = async ({
-    seasonId, 
+    seasonId,
     bossId
 }: {
     seasonId: number
@@ -41,7 +41,22 @@ const getEntries = async ({
     return result;
 }
 
+const getHitsSummary = async (seasonId: number) => {
+    const result = await prisma.guildBossEntry.groupBy({
+        by: ['playerId'],
+        where: { seasonId },
+        _sum: {
+            hits: true,
+        },
+        orderBy: {
+            _sum: { hits: 'desc' },
+        },
+    });
+    return result;
+}
+
 export default {
     createEntries,
     getEntries,
+    getHitsSummary,
 };

@@ -17,7 +17,9 @@ interface IGuildBossSeasonResponse {
     rowCount: number
 }
 
-const ROW_PER_PAGE = 2;
+const ROW_PER_PAGE = 5;
+const PADDING_BLOCK = 8 * 2;
+const LIST_ITEM_HEIGHT = 48;
 
 function GuildBossView() {
     const [page, setPage] = useState(1);
@@ -46,7 +48,7 @@ function GuildBossView() {
             />
 
             <Pagination
-                count={rowCount / ROW_PER_PAGE}
+                count={Math.ceil(rowCount / ROW_PER_PAGE)}
                 showFirstButton
                 showLastButton
                 page={page}
@@ -83,14 +85,9 @@ function GuildBossSeasonList({
     }
 
     return (
-        <Grid container spacing={2}>
-            <Grid
-                size={{
-                    xs: 12,
-                    md: 8,
-                }}
-            >
-                <List>
+        <Grid container>
+            <Grid size={{ xs: 12, md: 8 }}>
+                <List sx={{ minHeight: ROW_PER_PAGE * LIST_ITEM_HEIGHT + PADDING_BLOCK }}>
                     {seasons?.map((season) => (
                         <ListItemButton
                             key={season.id}

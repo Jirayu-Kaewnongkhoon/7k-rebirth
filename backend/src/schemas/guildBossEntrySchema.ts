@@ -18,5 +18,10 @@ export const getEntriesSchema = z.object({
     bossId: z.coerce.number(),
 });
 
+export const getHitsSummarySchema = z.object({
+    seasonId: z.coerce.number(),
+});
+
 export type CreateEntriesInput = ValidatedRequest<{ body: typeof createEntriesSchema }>;
 export type GetEntriesInput = ValidatedRequest<{ query: typeof getEntriesSchema }>;
+export type GetHitsSummaryInput = ValidatedRequest<{ query: typeof getHitsSummarySchema }>;

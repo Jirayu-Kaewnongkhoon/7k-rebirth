@@ -123,6 +123,7 @@ export default function GuildBossEntryFormDialog({
         onSuccess: () => {
             handleClose();
             queryClient.invalidateQueries({ queryKey: ['guild-boss-entries', { seasonId, bossId: boss.id }] });
+            queryClient.invalidateQueries({ queryKey: ['hitsSummary', seasonId] });
         }
     })
 
@@ -140,7 +141,11 @@ export default function GuildBossEntryFormDialog({
                 fullWidth
                 maxWidth="md"
                 open={open}
-                onClose={handleClose}
+                disableEscapeKeyDown={mutation.isPending}
+                onClose={() => {
+                    if (mutation.isPending) return;
+                    handleClose();
+                }}
             >
                 <DialogTitle sx={{ paddingBottom: 1 }}>อันดับคะแนน : บอส{boss.name}</DialogTitle>
                 <DialogContent dividers>
@@ -159,22 +164,23 @@ export default function GuildBossEntryFormDialog({
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ justifyContent: 'space-between' }}>
-                    <Button onClick={handleAddRow}>
+                    <Button disabled={mutation.isPending} onClick={handleAddRow}>
                         เพิ่มช่องกรอก
                     </Button>
 
                     <Box>
                         <Button
-                            variant="contained"
                             disabled={entries.some(e => e.playerId == null) || entries.length == 0}
                             onClick={handleSubmit}
                             loading={mutation.isPending}
                             loadingPosition="start"
                             startIcon={<Save />}
                         >
-                            Submit
+                            บันทึก
                         </Button>
-                        <Button onClick={handleClose}>Close</Button>
+                        <Button disabled={mutation.isPending} onClick={handleClose}>
+                            ปิด
+                        </Button>
                     </Box>
                 </DialogActions>
             </Dialog>

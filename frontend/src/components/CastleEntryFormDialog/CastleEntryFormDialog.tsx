@@ -181,7 +181,7 @@ function CastleEntryFormDialog(
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ justifyContent: 'space-between' }}>
-                    <Button onClick={handleAddRow}>
+                    <Button disabled={mutation.isPending} onClick={handleAddRow}>
                         เพิ่มช่องกรอก
                     </Button>
 
@@ -193,10 +193,10 @@ function CastleEntryFormDialog(
                             loadingPosition="start"
                             startIcon={<Save />}
                         >
-                            Submit
+                            บันทึก
                         </Button>
                         <Button disabled={mutation.isPending} onClick={handleClose}>
-                            Close
+                            ปิด
                         </Button>
                     </Box>
                 </DialogActions>

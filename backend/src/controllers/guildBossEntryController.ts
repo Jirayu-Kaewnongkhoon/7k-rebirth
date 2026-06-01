@@ -4,7 +4,7 @@ import { BaseResponse } from "../models/response";
 
 import guildBossEntryService from "../services/guildBossEntryService";
 
-import { CreateEntriesInput, GetEntriesInput } from "../schemas/guildBossEntrySchema";
+import { CreateEntriesInput, GetEntriesInput, GetHitsSummaryInput } from "../schemas/guildBossEntrySchema";
 
 const createEntries = async (req: CreateEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
@@ -26,4 +26,14 @@ const getEntries = async (req: GetEntriesInput, res: Response<BaseResponse>, nex
     }
 }
 
-export { createEntries, getEntries };
+const getHitsSummary = async (req: GetHitsSummaryInput, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const { seasonId } = req.query;
+        const summary = await guildBossEntryService.getHitsSummary(seasonId);
+        res.status(200).json({ success: true, data: summary });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { createEntries, getEntries, getHitsSummary };
