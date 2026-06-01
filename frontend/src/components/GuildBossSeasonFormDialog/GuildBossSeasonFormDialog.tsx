@@ -35,13 +35,17 @@ function GuildBossSeasonFormDialog({ page }: { page: number }) {
     return (
         <>
             <Button variant="contained" onClick={handleClickOpen}>
-                create season
+                สร้างซีซั่นใหม่
             </Button>
             <Dialog
                 fullWidth
                 maxWidth="md"
                 open={open}
-                onClose={handleClose}
+                disableEscapeKeyDown={mutation.isPending}
+                onClose={() => {
+                    if (mutation.isPending) return;
+                    handleClose();
+                }}
             >
                 <DialogTitle>วันที่เริ่มซีซั่น</DialogTitle>
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -53,22 +57,22 @@ function GuildBossSeasonFormDialog({ page }: { page: number }) {
                         value={startDate}
                         onChange={handleChange}
                     />
+                </DialogContent>
+                <DialogActions>
                     <Button
-                        variant="contained"
-                        color="primary"
                         onClick={() => {
                             mutation.mutate(startDate);
                         }}
-                        disabled={startDate == null}
+                        disabled={!startDate}
                         loading={mutation.isPending}
                         loadingPosition="start"
                         startIcon={<Save />}
                     >
-                        Submit
+                        บันทึก
                     </Button>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Close</Button>
+                    <Button disabled={mutation.isPending} onClick={handleClose}>
+                        ปิด
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
