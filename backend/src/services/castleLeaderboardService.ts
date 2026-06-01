@@ -1,6 +1,6 @@
 import { prisma } from "../prisma";
 
-import { getCalendarRange, getWeekday } from "../utils/date";
+import { getWeekday } from "../utils/date";
 
 const createLeaderboard = async (date: Date) => {
     const weekday = getWeekday(date);
@@ -30,13 +30,12 @@ const getLeaderboard = async (date: Date) => {
     return leaderboard;
 }
 
-const getLeaderboards = async (date: Date) => {
-    const { start, end } = getCalendarRange(date);
+const getLeaderboards = async (start: Date, end: Date) => {
     const leaderboards = await prisma.castleLeaderboard.findMany({
         where: {
             date: {
                 gte: start,
-                lte: end
+                lt: end
             }
         },
         select: {

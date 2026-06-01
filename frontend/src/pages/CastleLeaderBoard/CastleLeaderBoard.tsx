@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import localeTH from '@fullcalendar/core/locales/th';
@@ -17,18 +17,25 @@ interface LeaderboardEvent {
     };
 }
 
+interface DateRange {
+    start: string;
+    end: string;
+}
+
 function CastleLeaderBoard() {
     const navigate = useNavigate();
 
-    const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+    const [currentDate, setCurrentDate] = useState<DateRange | null>(null);
 
     const {
         data: leaderboards,
         isLoading,
         isError
     } = useQuery<LeaderboardEvent[]>({
-        queryKey: ['castle-leaderboards', today],
-        queryFn: () => getLeaderboards(today),
+        queryKey: ['castle-leaderboards', currentDate],
+        queryFn: () => getLeaderboards(currentDate!),
+        enabled: currentDate !== null,
+        placeholderData: (prev) => prev,
     });
 
     const handleDateClick = (arg: DateClickArg) => {
@@ -54,6 +61,12 @@ function CastleLeaderBoard() {
                 date: new Date(lb.date).toISOString().split('T')[0],
                 display: 'background',
             })) || []}
+            datesSet={(dateInfo) => {
+                setCurrentDate({
+                    start: dateInfo.startStr.split('T')[0],
+                    end: dateInfo.endStr.split('T')[0]
+                });
+            }}
         />
     )
 }

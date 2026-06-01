@@ -10,14 +10,15 @@ import {
 
 import {
     createLeaderboardSchema,
+    deleteLeaderboardSchema,
     getLeaderboardSchema,
-    deleteLeaderboardSchema
+    getLeaderboardsSchema
 } from '../schemas/castleLeaderboardSchema';
 
 const router = Router();
 
+router.get('/all', validate({ query: getLeaderboardsSchema }), getLeaderboards);
 router.get('/:date', validate({ params: getLeaderboardSchema }), getLeaderboard);
-router.get('/:date/all', validate({ params: getLeaderboardSchema }), getLeaderboards);
 router.post('/', validate({ body: createLeaderboardSchema }), createLeaderboard);
 router.delete('/:id', validate({ params: deleteLeaderboardSchema }), deleteLeaderboard);
 
