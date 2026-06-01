@@ -6,6 +6,7 @@ import { ExpandLess, ExpandMore, Person } from "@mui/icons-material";
 import { Avatar, Box, Collapse, Divider, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from "@mui/material";
 
 import GuildBossEntryFormDialog from "../../components/GuildBossEntryFormDialog/GuildBossEntryFormDialog";
+import HitsSummaryDialog from "../../components/HitsSummaryDialog/HitsSummaryDialog";
 
 import type { IGuildBoss, IGuildBossEntry, IGuildBossSeason } from "../../types/guildBoss";
 
@@ -55,6 +56,7 @@ function GuildBossEntry() {
                 วันที่: {dateFormat(season.startDate)} - {dateFormat(season.endDate)}
             </Typography>
             <Divider />
+            <HitsSummaryDialog seasonId={seasonId} />
             {boss.map(b => (
                 <Entry key={b.id} seasonId={seasonId} boss={b} />
             ))}

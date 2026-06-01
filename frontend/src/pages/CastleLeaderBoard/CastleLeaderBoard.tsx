@@ -9,13 +9,7 @@ import FullCalendar from '@fullcalendar/react';
 
 import { getLeaderboards } from "../../services/castleLeaderboardService";
 
-interface LeaderboardEvent {
-    id: number;
-    date: string;
-    _count: {
-        entries: number;
-    };
-}
+import type { ILeaderboardEvent } from "../../types/castle";
 
 interface DateRange {
     start: string;
@@ -31,7 +25,7 @@ function CastleLeaderBoard() {
         data: leaderboards,
         isLoading,
         isError
-    } = useQuery<LeaderboardEvent[]>({
+    } = useQuery<ILeaderboardEvent[]>({
         queryKey: ['castle-leaderboards', currentDate],
         queryFn: () => getLeaderboards(currentDate!),
         enabled: currentDate !== null,

@@ -18,3 +18,10 @@ export interface IGuildBossEntry {
     score: number
     hits: number
 }
+
+export interface IHitsSummary {
+    playerId: number;
+    _sum: {
+        hits: number;
+    }
+}

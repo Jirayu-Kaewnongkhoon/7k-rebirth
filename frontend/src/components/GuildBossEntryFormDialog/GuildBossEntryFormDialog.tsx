@@ -123,6 +123,7 @@ export default function GuildBossEntryFormDialog({
         onSuccess: () => {
             handleClose();
             queryClient.invalidateQueries({ queryKey: ['guild-boss-entries', { seasonId, bossId: boss.id }] });
+            queryClient.invalidateQueries({ queryKey: ['hitsSummary', seasonId] });
         }
     })
 
