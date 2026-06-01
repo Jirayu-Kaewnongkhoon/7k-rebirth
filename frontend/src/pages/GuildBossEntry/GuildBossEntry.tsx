@@ -79,6 +79,8 @@ function Entry({
 
     const [open, setOpen] = useState(false);
 
+    const totalScore = entries?.reduce((sum, entry) => sum + entry.score, 0) ?? 0;
+
     const handleClick = () => setOpen(!open);
 
     if (isLoading) {
@@ -125,6 +127,9 @@ function Entry({
                             </Typography>
                         ) : (
                             <List>
+                                <Typography variant="body1" sx={{ paddingX: 2, paddingY: 1, fontWeight: 'bold' }}>
+                                    {`คะแนนรวม : ${scoreFormat(totalScore)}`}
+                                </Typography>
                                 {entries?.map((entry) => (
                                     <ListItem
                                         key={entry.id}
