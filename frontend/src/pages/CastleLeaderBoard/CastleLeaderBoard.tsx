@@ -53,7 +53,7 @@ function CastleLeaderBoard() {
             events={leaderboards?.map(lb => ({
                 id: lb.id.toString(),
                 date: new Date(lb.date).toISOString().split('T')[0],
-                display: 'background',
+                display: lb._count.entries > 0 ? 'background' : 'none',
             })) || []}
             datesSet={(dateInfo) => {
                 setCurrentDate({
