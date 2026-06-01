@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
-import { Grid, List, ListItemButton, ListItemText, Pagination } from "@mui/material";
+import { Divider, Grid, List, ListItemButton, ListItemText, Pagination, Typography } from "@mui/material";
 
 import GuildBossSeasonFormDialog from "../../components/GuildBossSeasonFormDialog/GuildBossSeasonFormDialog";
 
@@ -31,6 +31,7 @@ function GuildBossView() {
     } = useQuery<IGuildBossSeasonResponse>({
         queryKey: ['guild-boss-seasons', { page }],
         queryFn: () => getSeasons(page, ROW_PER_PAGE),
+        placeholderData: (prev) => prev
     });
 
     const handlePageChange = (_e: React.ChangeEvent<unknown, Element>, page: number) => {
@@ -76,38 +77,47 @@ function GuildBossSeasonList({
         navigate(`/boss/${id}`);
     }
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (isError) {
-        return <div>Error loading seasons.</div>;
+    const textDisplay = (text: string) => {
+        return <Typography variant="body1" color="text.secondary" textAlign="center" padding={2}>
+            {text}
+        </Typography>
     }
 
     return (
         <Grid container>
             <Grid size={{ xs: 12, md: 8 }}>
                 <List sx={{ minHeight: ROW_PER_PAGE * LIST_ITEM_HEIGHT + PADDING_BLOCK }}>
-                    {seasons?.map((season) => (
-                        <ListItemButton
-                            key={season.id}
-                            sx={{
-                                '&:nth-of-type(even)': {
-                                    backgroundColor: '#9e9e9e22'
-                                }
-                            }}
-                            onClick={() => handleClick(season.id)}
-                        >
-                            <ListItemText
-                                primary={`
-                                    ซีซั่นวันที่ :
-                                    ${dateFormat(season.startDate)} - 
-                                    ${dateFormat(season.endDate)}
-                                `}
-                            />
-                        </ListItemButton>
-                    ))}
+                    {isLoading ? (
+                        textDisplay('กำลังโหลด...')
+                    ) : isError ? (
+                        textDisplay('เกิดข้อผิดพลาดในการโหลดซีซั่น')
+                    ) : seasons.length === 0 ? (
+                        textDisplay('ยังไม่มีข้อมูลซีซั่น')
+                    ) : (
+                        seasons?.map((season) => (
+                            <ListItemButton
+                                key={season.id}
+                                sx={{
+                                    '&:nth-of-type(even)': {
+                                        backgroundColor: '#9e9e9e22'
+                                    }
+                                }}
+                                onClick={() => handleClick(season.id)}
+                            >
+                                <ListItemText
+                                    primary={`
+                                        ซีซั่นวันที่ :
+                                        ${dateFormat(season.startDate)} - 
+                                        ${dateFormat(season.endDate)}
+                                    `}
+                                />
+                            </ListItemButton>
+                        ))
+                    )}
                 </List>
+
+                <Divider sx={{ mb: 2 }} />
+
             </Grid>
         </Grid>
     )
