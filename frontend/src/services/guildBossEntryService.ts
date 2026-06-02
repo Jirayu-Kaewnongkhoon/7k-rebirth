@@ -26,6 +26,11 @@ const getEntries = async (seasonId: number, bossId: number) => {
     return data.data;
 }
 
+const getEntriesByPlayer = async (playerId: number, bossId: number) => {
+    const data = await fetchClient(`guildBossEntry/player/${playerId}/boss/${bossId}`);
+    return data.data;
+}
+
 const getHitsSummary = async (seasonId: number) => {
     const data = await fetchClient(`guildBossEntry/hits?seasonId=${seasonId}`);
     return data.data;
@@ -34,5 +39,6 @@ const getHitsSummary = async (seasonId: number) => {
 export {
     createEntries,
     getEntries,
+    getEntriesByPlayer,
     getHitsSummary,
 };

@@ -141,8 +141,24 @@ const getJsonTemplate = async (leaderboardId: number) => {
     return template;
 }
 
+const ROWS_LIMIT = 8;
+
+const getEntriesByPlayer = async (playerId: number, bossId: number) => {
+    const result = await prisma.castleEntry.findMany({
+        take: ROWS_LIMIT,
+        where: { playerId, leaderboard: { bossId } },
+        orderBy: { createdAt: 'desc' },
+        include: {
+            leaderboard: true,
+        },
+    });
+
+    return result;
+}
+
 export default {
     createEntries,
     getEntries,
     getJsonTemplate,
+    getEntriesByPlayer,
 };

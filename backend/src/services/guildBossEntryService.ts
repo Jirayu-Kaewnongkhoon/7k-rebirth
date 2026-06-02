@@ -41,6 +41,21 @@ const getEntries = async ({
     return result;
 }
 
+const getEntriesByPlayer = async ({
+    playerId,
+    bossId
+}: {
+    playerId: number
+    bossId: number
+}) => {
+    const result = await prisma.guildBossEntry.findMany({
+        where: { playerId, bossId },
+        orderBy: { score: 'desc' },
+        include: { season: true },
+    });
+    return result;
+}
+
 const getHitsSummary = async (seasonId: number) => {
     const result = await prisma.guildBossEntry.groupBy({
         by: ['playerId'],
@@ -58,5 +73,6 @@ const getHitsSummary = async (seasonId: number) => {
 export default {
     createEntries,
     getEntries,
+    getEntriesByPlayer,
     getHitsSummary,
 };

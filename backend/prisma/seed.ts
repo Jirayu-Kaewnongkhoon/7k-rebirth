@@ -42,7 +42,7 @@ const createPlayer = async () => {
 
 const createGuildBoss = async () => {
     const boss = [
-        { name: 'เทโอ' },
+        { name: 'แทโอ' },
         { name: 'ไคล์' },
         { name: 'ยอนฮี' },
         { name: 'คาร์ม่า' },
