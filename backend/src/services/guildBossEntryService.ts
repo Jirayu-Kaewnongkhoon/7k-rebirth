@@ -50,7 +50,7 @@ const getEntriesByPlayer = async ({
 }) => {
     const result = await prisma.guildBossEntry.findMany({
         where: { playerId, bossId },
-        orderBy: { score: 'desc' },
+        orderBy: { score: 'asc' },
         include: { season: true },
     });
     return result;
