@@ -4,7 +4,7 @@ import { BaseResponse } from "../models/response";
 
 import castleEntryService from "../services/castleEntryService";
 
-import { CreateEntriesInput, DownloadTemplateInput, GetEntriesInput } from "../schemas/castleEntrySchema";
+import { CreateEntriesInput, DownloadTemplateInput, GetEntriesByPlayerInput, GetEntriesInput } from "../schemas/castleEntrySchema";
 
 const createEntries = async (req: CreateEntriesInput, res: Response<BaseResponse>, next: NextFunction) => {
     try {
@@ -26,6 +26,17 @@ const getEntries = async (req: GetEntriesInput, res: Response<BaseResponse>, nex
     }
 }
 
+const getEntriesByPlayer = async (req: GetEntriesByPlayerInput, res: Response<BaseResponse>, next: NextFunction) => {
+    try {
+        const playerId = req.params.playerId;
+        const bossId = req.params.bossId;
+        const entries = await castleEntryService.getEntriesByPlayer(playerId, bossId);
+        res.status(200).json({ success: true, data: entries });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const downloadJsonTemplate = async (req: DownloadTemplateInput, res: Response, next: NextFunction) => {
     try {
         const leaderboardId = req.params.leaderboardId;
@@ -40,4 +51,4 @@ const downloadJsonTemplate = async (req: DownloadTemplateInput, res: Response, n
     }
 }
 
-export { createEntries, downloadJsonTemplate, getEntries };
+export { createEntries, downloadJsonTemplate, getEntries, getEntriesByPlayer };

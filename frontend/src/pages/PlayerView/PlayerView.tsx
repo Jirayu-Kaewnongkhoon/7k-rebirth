@@ -1,19 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 
-import { Divider, Grid, List, ListItem, ListItemText, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
+import ScoreGrowthChart from '../../components/ScoreGrowthChart/ScoreGrowthChart';
+
+import { getBoss } from '../../services/castleBossService';
+import { getEntriesByPlayer as getCastleEntriesByPlayer } from '../../services/castleEntryService';
+import { getEntriesByPlayer as getGuildBossEntriesByPlayer } from '../../services/guildBossEntryService';
 import { getPlayer } from '../../services/playerService';
 
+import type { ICastleBoss } from '../../types/castle';
 import type { IPlayerWithStats } from '../../types/player';
 
 import { scoreFormat } from '../../utils/score';
+import { dateFormat } from '../../utils/date';
+import { getGuildBoss } from '../../services/guildBossService';
 
 function PlayerView() {
     const { id: playerId } = useParams();
     const { data: player, isLoading, isError } = useQuery<IPlayerWithStats>({
         queryKey: ['player', playerId],
-        queryFn: () => getPlayer(Number(playerId)!)
+        queryFn: () => getPlayer(Number(playerId!))
     });
 
     if (isLoading) {
@@ -81,9 +99,140 @@ function PlayerView() {
                         </List>
                     )}
                 </Grid>
+                <CastleChart playerId={Number(playerId!)} />
+                <GuildBossChart playerId={Number(playerId!)} />
             </Grid >
         </>
     )
 }
 
 export default PlayerView
+
+interface ICastleEntryChart {
+    id: number;
+    score: number;
+    leaderboard: {
+        date: Date;
+    }
+}
+
+const CastleChart = ({ playerId }: { playerId: number; }) => {
+    const [bossId, setBossId] = useState<number>(1);
+
+    const { data: bossList } = useQuery<ICastleBoss[]>({
+        queryKey: ['castle-boss'],
+        queryFn: getBoss,
+    });
+
+    const { data: entries, isLoading } = useQuery<ICastleEntryChart[]>({
+        queryKey: ['castle-entries', { playerId, bossId }],
+        queryFn: () => getCastleEntriesByPlayer(playerId, bossId)
+    });
+
+    const handleBossChange = (e: SelectChangeEvent<number>) => {
+        setBossId(e.target.value);
+    }
+
+    return (
+        <Grid
+            size={{ xs: 12, md: 8 }}
+            sx={{
+                borderRadius: 2,
+                padding: 2,
+                boxShadow: 'var(--box-shadow)',
+            }}
+        >
+            <Box display='flex' justifyContent='space-between' alignItems='center'>
+                <Typography variant="h6" fontWeight="bold">
+                    คะแนนปราสาท
+                </Typography>
+                {bossList && (
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                            value={bossId}
+                            onChange={handleBossChange}
+                        >
+                            {bossList?.map((boss) => (
+                                <MenuItem key={boss.id} value={boss.id}>
+                                    {boss.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
+            </Box>
+            <Divider sx={{ marginBlock: 2 }} />
+            <ScoreGrowthChart
+                loading={isLoading}
+                dataset={entries ?? []}
+                getXValue={(entry) => dateFormat(entry.leaderboard.date.toString())}
+                getYValue={(entry) => entry.score}
+            />
+        </Grid>
+    )
+}
+
+interface ICastleEntryChart {
+    id: number;
+    score: number;
+    season: {
+        startDate: Date;
+        endDate: Date;
+    }
+}
+
+const GuildBossChart = ({ playerId }: { playerId: number; }) => {
+    const [bossId, setBossId] = useState<number>(5);
+
+    const { data: bossList } = useQuery<ICastleBoss[]>({
+        queryKey: ['guild-boss'],
+        queryFn: getGuildBoss,
+    });
+
+    const { data: entries, isLoading } = useQuery<ICastleEntryChart[]>({
+        queryKey: ['guild-boss-entries', { playerId, bossId }],
+        queryFn: () => getGuildBossEntriesByPlayer(playerId, bossId)
+    });
+
+    const handleBossChange = (e: SelectChangeEvent<number>) => {
+        setBossId(e.target.value);
+    }
+
+    return (
+        <Grid
+            size={{ xs: 12, md: 8 }}
+            sx={{
+                borderRadius: 2,
+                padding: 2,
+                boxShadow: 'var(--box-shadow)',
+            }}
+        >
+            <Box display='flex' justifyContent='space-between' alignItems='center'>
+                <Typography variant="h6" fontWeight="bold">
+                    คะแนนบอสจุติ
+                </Typography>
+                {bossList && (
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                            value={bossId}
+                            onChange={handleBossChange}
+                        >
+                            {bossList?.map((boss) => (
+                                <MenuItem key={boss.id} value={boss.id}>
+                                    {boss.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
+            </Box>
+            <Divider sx={{ marginBlock: 2 }} />
+            <ScoreGrowthChart
+                loading={isLoading}
+                dataset={entries ?? []}
+                getXValue={(entry) => dateFormat(entry.season.startDate.toString())}
+                getYValue={(entry) => entry.score}
+            />
+        </Grid>
+    )
+}

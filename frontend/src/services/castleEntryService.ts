@@ -37,8 +37,14 @@ const getEntries = async (leaderboardId: number) => {
     return data.data;
 }
 
+const getEntriesByPlayer = async (playerId: number, bossId: number) => {
+    const data = await fetchClient(`castleEntry/player/${playerId}/boss/${bossId}`);
+    return data.data;
+}
+
 export {
     createEntries,
     downloadJsonTemplate,
     getEntries,
+    getEntriesByPlayer,
 };

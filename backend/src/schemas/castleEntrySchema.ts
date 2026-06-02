@@ -15,10 +15,16 @@ export const getEntriesSchema = z.object({
     leaderboardId: z.coerce.number(),
 });
 
+export const getEntriesByPlayerSchema = z.object({
+    playerId: z.coerce.number(),
+    bossId: z.coerce.number(),
+});
+
 export const downloadTemplateSchema = z.object({
     leaderboardId: z.coerce.number(),
 });
 
 export type CreateEntriesInput = ValidatedRequest<{ body: typeof createEntriesSchema }>;
 export type GetEntriesInput = ValidatedRequest<{ params: typeof getEntriesSchema }>;
+export type GetEntriesByPlayerInput = ValidatedRequest<{ params: typeof getEntriesByPlayerSchema }>;
 export type DownloadTemplateInput = ValidatedRequest<{ params: typeof downloadTemplateSchema }>;
