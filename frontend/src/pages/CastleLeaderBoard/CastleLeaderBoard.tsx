@@ -48,6 +48,7 @@ function CastleLeaderBoard() {
         <FullCalendar
             firstDay={0}
             locale={localeTH}
+            contentHeight="auto"
             plugins={[dayGridPlugin, interactionPlugin]}
             dateClick={handleDateClick}
             events={leaderboards?.map(lb => ({
