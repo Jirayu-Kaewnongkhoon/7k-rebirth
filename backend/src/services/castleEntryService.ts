@@ -147,7 +147,7 @@ const getEntriesByPlayer = async (playerId: number, bossId: number) => {
     const result = await prisma.castleEntry.findMany({
         take: ROWS_LIMIT,
         where: { playerId, leaderboard: { bossId } },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
         include: {
             leaderboard: true,
         },
