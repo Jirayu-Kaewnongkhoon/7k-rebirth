@@ -61,6 +61,10 @@ const Content = ({
         enabled: open && !!playerData,
     });
 
+    const getPlayerName = (id: number) => {
+        return playerData?.find(p => p.id === id)?.name || 'Unknown Player';
+    }
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
             <DialogTitle>สรุปรอบตีรวม</DialogTitle>
@@ -70,9 +74,9 @@ const Content = ({
                 {error && <Typography color="error">เกิดข้อผิดพลาดในการโหลดข้อมูล</Typography>}
 
                 <List>
-                    {data?.map((d) => (
+                    {data?.map((d, index) => (
                         <ListItem key={d.playerId}>
-                            <ListItemText primary={playerData?.find(p => p.id === d.playerId)?.name || 'Unknown Player'} />
+                            <ListItemText primary={`${index+1}. ${getPlayerName(d.playerId)}`} />
                             <Typography>รอบตีรวม: {d._sum.hits}</Typography>
                         </ListItem>
                     ))}

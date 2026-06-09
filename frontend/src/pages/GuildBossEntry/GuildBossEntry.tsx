@@ -132,7 +132,7 @@ function Entry({
                                 <Typography variant="body1" sx={{ paddingX: 2, paddingY: 1, fontWeight: 'bold' }}>
                                     {`คะแนนรวม : ${scoreFormat(totalScore)}`}
                                 </Typography>
-                                {entries?.map((entry) => (
+                                {entries?.map((entry, index) => (
                                     <ListItem
                                         key={entry.id}
                                         sx={{
@@ -147,7 +147,7 @@ function Entry({
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary={entry.player.name}
+                                            primary={`${index+1}. ${entry.player.name}`}
                                             secondary={`คะแนนต่อรอบ: ${scoreFormat(entry.score / entry.hits)}`}
                                         />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: "flex-end" }}>
