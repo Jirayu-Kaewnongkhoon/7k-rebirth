@@ -198,7 +198,7 @@ function Entries({ id }: { id: number }) {
         <Box marginBlock={2}>
             <Box sx={{ display: 'flex', alignItems: { sm: 'center' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
                 <Typography variant="h5" noWrap>
-                    {`อันดับคะแนน (${entries?.length} รายการ)`}
+                    {`อันดับคะแนน (${entries?.filter(e => e.score !== 0).length} รายการ)`}
                 </Typography>
                 <Typography variant="h5" sx={{ display: { xs: 'none', sm: 'block' } }}>|</Typography>
                 <Typography variant="h5" noWrap>
