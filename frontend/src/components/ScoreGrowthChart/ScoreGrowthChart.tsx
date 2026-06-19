@@ -1,3 +1,4 @@
+import type { SeriesValueFormatter } from '@mui/x-charts/internals';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 interface Props<T> {
@@ -5,13 +6,15 @@ interface Props<T> {
     dataset: T[];
     getXValue: (item: T) => string | number;
     getYValue: (item: T) => number;
-};
+    yFormat?: SeriesValueFormatter<number | null> | undefined
+}
 
 function ScoreGrowthChart<T>({
     loading,
     dataset,
     getXValue,
-    getYValue
+    getYValue,
+    yFormat,
 }: Props<T>) {
     return (
         <LineChart
@@ -26,6 +29,7 @@ function ScoreGrowthChart<T>({
                 data: dataset.map(getYValue),
                 curve: 'linear',
                 showMark: true,
+                valueFormatter: yFormat
             }]}
         />
     )

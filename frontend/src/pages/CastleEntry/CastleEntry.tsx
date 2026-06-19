@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
-import { CloudUpload, Person, SaveAlt } from "@mui/icons-material";
-import { Avatar, Box, Button, Divider, Grid, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
+import { CloudUpload, KeyboardArrowLeft, KeyboardArrowRight, Person, SaveAlt } from "@mui/icons-material";
+import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 import CastleEntryFormDialog, { type CastleEntryFormDialogHandle, type EntryInput } from "../../components/CastleEntryFormDialog/CastleEntryFormDialog";
@@ -36,6 +36,7 @@ interface JsonData {
 function CastleEntry() {
     const { date } = useParams();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const dialogRef = useRef<CastleEntryFormDialogHandle>(null);
 
@@ -112,36 +113,98 @@ function CastleEntry() {
         }
     }
 
+    const goToDate = (direction: 'prev' | 'next') => {
+        const dayOffset = direction === 'prev' ? -1 : 1;
+
+        const date = new Date(leaderboard.date);
+        date.setDate(date.getDate() + dayOffset);
+
+        navigate(`/leaderboard/${date.toISOString().split('T')[0]}`);
+    };
+
     return (
         <>
             <Box
                 sx={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingBlock: 2
+                    gap: 2,
+                    py: 2,
+                    px: { xs: 1.5, sm: 2 },
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
                 }}
             >
-                <Box>
-                    <Typography variant="h4" noWrap overflow={'visible'}>
-                        {leaderboard.boss.name} : {dateFormat(leaderboard.date)}
-                    </Typography>
-                </Box>
+                {/* Date navigator */}
                 <Box
                     sx={{
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: 1
+                        alignItems: 'center',
+                        gap: 1,
                     }}
                 >
-                    <CastleEntryFormDialog
-                        leaderboardId={leaderboard.id}
-                        ref={dialogRef}
-                    />
+                    <IconButton
+                        onClick={() => goToDate('prev')}
+                        size="small"
+                        sx={{
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            '&:hover': {
+                                bgcolor: 'action.hover',
+                                borderColor: 'primary.main',
+                            },
+                        }}
+                    >
+                        <KeyboardArrowLeft />
+                    </IconButton>
+
+                    <Typography
+                        variant="h5"
+                        fontWeight={600}
+                        noWrap
+                        sx={{ minWidth: 0, textAlign: 'center', px: 1.5 }}
+                    >
+                        {leaderboard.boss.name}
+                        <Box component="span" sx={{ mx: 1.25, color: 'text.disabled' }}>
+                            •
+                        </Box>
+                        <Box component="span" sx={{ color: 'text.secondary' }}>
+                            {dateFormat(leaderboard.date)}
+                        </Box>
+                    </Typography>
+
+                    <IconButton
+                        onClick={() => goToDate('next')}
+                        size="small"
+                        sx={{
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            '&:hover': {
+                                bgcolor: 'action.hover',
+                                borderColor: 'primary.main',
+                            },
+                        }}
+                    >
+                        <KeyboardArrowRight />
+                    </IconButton>
+                </Box>
+
+                {/* Actions */}
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={1}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
+                >
+                    <CastleEntryFormDialog leaderboardId={leaderboard.id} ref={dialogRef} />
+
                     <Button
                         component="label"
                         size="small"
-                        variant="contained"
+                        variant="outlined"
                         tabIndex={-1}
                         startIcon={<CloudUpload />}
                     >
@@ -152,18 +215,17 @@ function CastleEntry() {
                             onChange={handleFileChange}
                         />
                     </Button>
+
                     <Button
                         size="small"
-                        variant="contained"
+                        variant="outlined"
                         startIcon={<SaveAlt />}
                         onClick={handleDownloadTemplate}
                     >
                         JSON Template
                     </Button>
-                </Box>
+                </Stack>
             </Box>
-
-            <Divider />
 
             <Entries id={leaderboard.id} />
         </>
