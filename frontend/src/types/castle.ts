@@ -25,3 +25,7 @@ export interface ILeaderboardEvent {
         entries: number;
     };
 }
+
+export interface ICastleEntryWithLeaderboard extends ICastleEntry {
+    leaderboard: ICastleLeaderBoard;
+}

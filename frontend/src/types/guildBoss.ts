@@ -25,3 +25,7 @@ export interface IHitsSummary {
         hits: number;
     }
 }
+
+export interface IGuildBossEntryWithSeason extends IGuildBossEntry {
+    season: IGuildBossSeason
+}

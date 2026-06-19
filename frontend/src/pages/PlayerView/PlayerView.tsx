@@ -20,7 +20,8 @@ import { getEntriesByPlayer as getCastleEntriesByPlayer } from '../../services/c
 import { getEntriesByPlayer as getGuildBossEntriesByPlayer } from '../../services/guildBossEntryService';
 import { getPlayer } from '../../services/playerService';
 
-import type { ICastleBoss } from '../../types/castle';
+import type { ICastleBoss, ICastleEntryWithLeaderboard } from '../../types/castle';
+import type { IGuildBoss, IGuildBossEntryWithSeason } from '../../types/guildBoss';
 import type { IPlayerWithStats } from '../../types/player';
 
 import { scoreFormat } from '../../utils/score';
@@ -108,14 +109,6 @@ function PlayerView() {
 
 export default PlayerView
 
-interface ICastleEntryChart {
-    id: number;
-    score: number;
-    leaderboard: {
-        date: Date;
-    }
-}
-
 const CastleChart = ({ playerId }: { playerId: number; }) => {
     const [bossId, setBossId] = useState<number>(1);
 
@@ -124,7 +117,7 @@ const CastleChart = ({ playerId }: { playerId: number; }) => {
         queryFn: getBoss,
     });
 
-    const { data: entries, isLoading } = useQuery<ICastleEntryChart[]>({
+    const { data: entries, isLoading } = useQuery<ICastleEntryWithLeaderboard[]>({
         queryKey: ['castle-entries', { playerId, bossId }],
         queryFn: () => getCastleEntriesByPlayer(playerId, bossId)
     });
@@ -165,31 +158,22 @@ const CastleChart = ({ playerId }: { playerId: number; }) => {
             <ScoreGrowthChart
                 loading={isLoading}
                 dataset={entries ?? []}
-                getXValue={(entry) => dateFormat(entry.leaderboard.date.toString())}
+                getXValue={(entry) => dateFormat(entry.leaderboard.date)}
                 getYValue={(entry) => entry.score}
             />
         </Grid>
     )
 }
 
-interface ICastleEntryChart {
-    id: number;
-    score: number;
-    season: {
-        startDate: Date;
-        endDate: Date;
-    }
-}
-
 const GuildBossChart = ({ playerId }: { playerId: number; }) => {
     const [bossId, setBossId] = useState<number>(5);
 
-    const { data: bossList } = useQuery<ICastleBoss[]>({
+    const { data: bossList } = useQuery<IGuildBoss[]>({
         queryKey: ['guild-boss'],
         queryFn: getGuildBoss,
     });
 
-    const { data: entries, isLoading } = useQuery<ICastleEntryChart[]>({
+    const { data: entries, isLoading } = useQuery<IGuildBossEntryWithSeason[]>({
         queryKey: ['guild-boss-entries', { playerId, bossId }],
         queryFn: () => getGuildBossEntriesByPlayer(playerId, bossId)
     });
@@ -230,8 +214,9 @@ const GuildBossChart = ({ playerId }: { playerId: number; }) => {
             <ScoreGrowthChart
                 loading={isLoading}
                 dataset={entries ?? []}
-                getXValue={(entry) => dateFormat(entry.season.startDate.toString())}
-                getYValue={(entry) => entry.score}
+                getXValue={(entry) => dateFormat(entry.season.startDate)}
+                getYValue={(entry) => entry.score / entry.hits}
+                yFormat={(val) => `${scoreFormat(val!)} (ต่อรอบ)`}
             />
         </Grid>
     )
