@@ -10,6 +10,8 @@ import { deletePlayer, getPlayers } from "../../services/playerService";
 
 import type { IPlayer } from "../../types/player";
 
+import { dateFormat } from "../../utils/date";
+
 function Member() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -28,6 +30,12 @@ function Member() {
     });
 
     const totalPlayers = players?.filter(player => player.isActive).length ?? 0;
+
+    const playerStatus = (isActive: boolean, date: string) => {
+        const formattedDate = dateFormat(date);
+        const statusText = `วันที่เข้าร่วม: ${formattedDate}`;
+        return isActive ? statusText : "Inactive";
+    }
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -74,7 +82,7 @@ function Member() {
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={player.name}
-                                    secondary={!player.isActive && 'Inactive'}
+                                    secondary={playerStatus(player.isActive, player.createdAt)}
                                 />
 
                                 <IconButton

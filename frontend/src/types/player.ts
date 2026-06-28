@@ -4,6 +4,7 @@ export interface IPlayer {
     id: number;
     name: string;
     isActive: boolean;
+    createdAt: string;
 }
 
 export interface IPlayerBossStats {
