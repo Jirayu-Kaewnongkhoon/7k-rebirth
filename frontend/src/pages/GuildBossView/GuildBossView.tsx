@@ -99,7 +99,7 @@ function GuildBossSeasonList({
                                 key={season.id}
                                 sx={{
                                     '&:nth-of-type(even)': {
-                                        backgroundColor: '#9e9e9e22'
+                                        backgroundColor: 'action.selected'
                                     }
                                 }}
                                 onClick={() => handleClick(season.id)}

@@ -114,8 +114,10 @@ function Entry({
                         <ListItemButton
                             onClick={handleClick}
                             sx={{
-                                boxShadow: 'var(--box-shadow)',
-                                borderRadius: 1
+                                border: (theme) =>
+                                    theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                                boxShadow: (theme) =>
+                                    theme.palette.mode === 'dark' ? 'none' : 'var(--box-shadow)',
                             }}>
                             <ListItemText primary={`บอส${boss.name}`} />
                             {open ? <ExpandLess /> : <ExpandMore />}
@@ -137,7 +139,7 @@ function Entry({
                                         key={entry.id}
                                         sx={{
                                             '&:nth-of-type(even)': {
-                                                backgroundColor: '#9e9e9e22'
+                                                backgroundColor: 'action.selected'
                                             }
                                         }}
                                     >
@@ -147,7 +149,7 @@ function Entry({
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary={`${index+1}. ${entry.player.name}`}
+                                            primary={`${index + 1}. ${entry.player.name}`}
                                             secondary={`คะแนนต่อรอบ: ${scoreFormat(entry.score / entry.hits)}`}
                                         />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: "flex-end" }}>

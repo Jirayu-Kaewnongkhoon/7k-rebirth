@@ -78,7 +78,7 @@ function PlayerView() {
                                     sx={{
                                         borderRadius: 1,
                                         '&:nth-of-type(even)': {
-                                            backgroundColor: '#9e9e9e22'
+                                            backgroundColor: 'action.selected'
                                         }
                                     }}
                                 >
