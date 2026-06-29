@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router';
 
-import { Castle, CrueltyFree, Logout, Menu, People } from '@mui/icons-material';
+import { Castle, CrueltyFree, DarkMode, LightMode, Logout, Menu, People } from '@mui/icons-material';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import { StyledEngineProvider } from '@mui/material/styles';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { useThemeToggle } from '../../contexts/ThemeContext';
 
 const drawerWidth = 240;
 
@@ -52,6 +53,7 @@ function Sidebar(props: Props) {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const { logoutMutation } = useAuth();
+    const { mode, toggleTheme } = useThemeToggle()
 
     const handleDrawerClose = () => {
         setIsClosing(true);
@@ -115,6 +117,9 @@ function Sidebar(props: Props) {
                         <Typography variant="h6" noWrap component="div">
                             7k: Rebirth
                         </Typography>
+                        <IconButton onClick={toggleTheme}>
+                            {mode === 'dark' ? <LightMode /> : <DarkMode />}
+                        </IconButton>
                     </Box>
                     <IconButton
                         color="inherit"
@@ -124,7 +129,6 @@ function Sidebar(props: Props) {
                     >
                         <Logout />
                     </IconButton>
-
                 </Toolbar>
             </AppBar>
             <Box
@@ -211,7 +215,7 @@ function SidebarItem({
             onClick={() => onClick()}
             sx={{
                 "&.active": {
-                    backgroundColor: "#e3f2fd"
+                    backgroundColor: "action.selected"
                 }
             }}
         >

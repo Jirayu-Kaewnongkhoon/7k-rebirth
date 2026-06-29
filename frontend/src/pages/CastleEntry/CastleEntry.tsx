@@ -285,7 +285,7 @@ function Entries({ id }: { id: number }) {
                                     key={entry.id}
                                     sx={{
                                         '&:nth-of-type(even)': {
-                                            backgroundColor: '#9e9e9e22'
+                                            backgroundColor: 'action.selected'
                                         }
                                     }}
                                 >

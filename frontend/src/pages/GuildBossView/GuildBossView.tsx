@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
-import { Divider, Grid, List, ListItemButton, ListItemText, Pagination, Typography } from "@mui/material";
+import { PlayCircle } from "@mui/icons-material";
+import { Divider, Grid, List, ListItemButton, ListItemIcon, ListItemText, Pagination, Typography } from "@mui/material";
 
 import GuildBossSeasonFormDialog from "../../components/GuildBossSeasonFormDialog/GuildBossSeasonFormDialog";
 
@@ -83,6 +84,11 @@ function GuildBossSeasonList({
         </Typography>
     }
 
+    const isActive = (startDate: Date | string, endDate: Date | string) => {
+        const now = Date.now();
+        return now >= new Date(startDate).getTime() && now <= new Date(endDate).getTime();
+    };
+
     return (
         <Grid container>
             <Grid size={{ xs: 12, md: 8 }}>
@@ -99,7 +105,7 @@ function GuildBossSeasonList({
                                 key={season.id}
                                 sx={{
                                     '&:nth-of-type(even)': {
-                                        backgroundColor: '#9e9e9e22'
+                                        backgroundColor: 'action.selected'
                                     }
                                 }}
                                 onClick={() => handleClick(season.id)}
@@ -111,6 +117,14 @@ function GuildBossSeasonList({
                                         ${dateFormat(season.endDate)}
                                     `}
                                 />
+                                {isActive(season.startDate, season.endDate) && (
+                                    <ListItemIcon sx={{ minWidth: 'auto' }}>
+                                        <PlayCircle color="error" />
+                                        <Typography color="error" sx={{ ml: 0.5 }}>
+                                            LIVE
+                                        </Typography>
+                                    </ListItemIcon>
+                                )}
                             </ListItemButton>
                         ))
                     )}
