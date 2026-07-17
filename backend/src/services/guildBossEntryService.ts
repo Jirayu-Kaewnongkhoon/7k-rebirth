@@ -41,6 +41,8 @@ const getEntries = async ({
     return result;
 }
 
+const ROWS_LIMIT = 8;
+
 const getEntriesByPlayer = async ({
     playerId,
     bossId
@@ -49,11 +51,12 @@ const getEntriesByPlayer = async ({
     bossId: number
 }) => {
     const result = await prisma.guildBossEntry.findMany({
+        take: ROWS_LIMIT,
         where: { playerId, bossId },
-        orderBy: { season: { startDate: 'asc' } },
+        orderBy: { season: { startDate: 'desc' } },
         include: { season: true },
     });
-    return result;
+    return result.reverse();
 }
 
 const getHitsSummary = async (seasonId: number) => {
